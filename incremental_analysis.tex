@@ -63,7 +63,7 @@ Discrete Event Systems, Modular Structure, Distributed Diagnosability
 \newtheorem{lemma}{Lemma}
 \newtheorem{assumption}{Assumption}
 \newtheorem{corollary}{Corollary}
-\newtheorem{example}{Example}  
+\newtheorem{example}{Example}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -126,7 +126,7 @@ if the following holds true:
 \end{equation}
 The definition requires each fault originated in any language of the subset $j$
 to be diagnosed observing only events of the languages from the same subset $j$.
-However, the languages $L_j$ were not given, and do not have to be necessary
+However, the languages $L_j$ are not given, and do not have to be necessary
 constructed. That is why we use the term \emph{virtual module} as a synonym for
 the subset $j$.
 
@@ -148,7 +148,7 @@ condition:
 	 	(\sigma \not \in u)
 	 	\\
 	 	(\forall w\sigma \in \overline{t})
-	 	[M_j(t\backslash w\sigma) \neq \emptyset].
+	 	[M_j(t / w\sigma) \neq \emptyset].
 	\end{array}
 \end{equation}
 % where $M'_j: (\Sigma_i \cup \Sigma_j)^* \rightarrow (\Sigma_{j,o}\backslash
@@ -162,6 +162,7 @@ observations from an observation of the string $u$.
 Now, we rewrite Lemma 3 from the first article in the context of our setup, as
 follows:
 \begin{lemma}
+\label{lem:virtual_module_is_diagnosable}
 Given a set of languages $j \in J$, the virtual module $j$ is diagnosable with
 respect to $M_j$ if:
 \end{lemma}
@@ -199,8 +200,9 @@ Since it is enough to pick just one module satisfiying the conditions, we
 propose a procedure for this task, in the next section.
 
 \section{Algorithm to choose a module with observable support}
-Assume that the objective function is to have the number of modules as many as
-possible, i.e. to have the maximal cardinality of the partitition $J$.
+Assume that the objective function is to have the number of modules in the
+sytems as many as possible, i.e. to have the maximal cardinality of the
+partitition $J$.
 Given an initial set of languages, let rank of $J$ be eqal to 0, i.e. $|J| =
 |I|$. Let $F$ denotes the subuset of languages with faults, and $M$ denotes the
 subset of languages with correspondent observable supports.
@@ -230,7 +232,7 @@ Given the system $S$ of cardinality $|I|$, the subset $F
 \subseteq I$ of modules with faults, such that any $f\in F$ is not diagnosable
 locally, the subset $M \subseteq I$ of modules with observable supports, such
 that $(\forall f \in F)~\{m \in M\}\neq \emptyset$. In order to make the system
-diagnosable by minimal number of virtual modules:
+diagnosable by minimal number of virtual modules: 
 \begin{enumerate}
   \item Initially set the partition $J$ of $I$ such that the rank of $J$ is
   equal to 0;
@@ -246,12 +248,20 @@ we consider, firstly, the languages which themselves contain the faulty
 sublanguages, thus maximizing the number of virtual modules in the system.
 
 It worth to note that the above algorithm can be augumented by additional
-criterias, for instance, as a way to decrease computational expences.
+criterias aimed, for instance, to decrease computational expences.
 
 % The objective function discribes a combinatorial optimisation problem, which can
 % be solved by linear programming methods.
 
-\section{\ldots}
+\section{Co-faulty language}
+Assume that given a language with faulty behaviour and a language which has an
+observable support, but it is not known for which language. It is now requred to
+verify if this is the observable support for either faulty or non-faulty
+sublanguages. If it is true, then the correspondent modules can be
+composed into a virtual module.
+According to the Lemma \ref{lem:virtual_module_is_diagnosable}, in order to
+decide if the virtual module is diagnosable we need to verify the necessary
+conditions for the all strings $P_i^{-1}(L_{i,f})$ and $P_i^{-1}(L_{i,nf})$.
 
 \begin{definition}
 \label{def:graph}
