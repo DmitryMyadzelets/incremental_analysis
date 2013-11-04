@@ -1,3 +1,6 @@
+% 
+% Submission to: http://wodes2014.lurpa.ens-cachan.fr/
+% 
 % \documentclass[a4paper,oneside]{article}
 \documentclass[a4paper, 10pt, conference]{ieeeconf}
 \IEEEoverridecommandlockouts
@@ -73,6 +76,40 @@ Discrete Event Systems, Modular Structure, Distributed Diagnosability
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preliminaries}
 \label{sec:Preliminaries}
+The notation used in this document is adopted from
+\cite{cassandras_introduction_2010}.
+Let $\Sigma$ be a finite set of events. A sequence of events is a string.
+$\Sigma^*$ denotes a set of all finite strings over $\Sigma$.
+$L\subseteq\Sigma^*$ is a language over $\Sigma$. Given strings $s$ and $t$,
+$st$ is their concatenation. Given strings $s$ and $w$, $w$ is a prefix of $s$
+if exists $t$ such that $wt = s$. Prefix closure of $L$, denoted by
+$\overline{L}$ is a set of all prefixes of all strings in $L$.
+If $\overline{L} = L$ then $L$ is prefix-closed. The post language of $L$ after
+a string $s$ is denoted as $L/s$, i.e. $L/s = \{t\mid st \in L\}$. We
+write $\sigma \in s$ if the event $\sigma \in \Sigma$ appears in the string $s
+\in \Sigma^*$. If $\{s\}$ is a singleton, we write $s$ for operations on
+languages.
+
+An automaton $G$ is a tuple $$G=(X,\Sigma,\Delta,x_0, X_m),$$ where $X$ is a
+set of states, $x_0 \in X$ is an initial state, $X_m \subseteq X$ is the set of
+marked states, and $\Delta: X \times \Sigma \rightarrow X$ is the transition
+function.
+We say the a language $L = \mathcal{L}(G)$ is generated or recognized by the
+automaton $G$. In this paper we assume that for each language there is always a
+correspondent automaton, and vice versa. The marked language $L_m \subseteq L$
+is intended to make a part of the automaton's behaviour distinguishable.
+
+Some events of DES can not be observed. To reflect that the set of events
+$\Sigma$ is partitioned into disjointed sets of observable events $\Sigma_o$ and
+not observable events $\Sigma_{ou}$, i.e. $\Sigma = \Sigma_o~\dot{\cup}~
+\Sigma_{ou}$.
+The $M: \Sigma^* \rightarrow \Sigma_o^*$ denotes the natural projection that
+erases unobservable events; $\epsilon$ means the empty string. The
+correspondent inverse projection is $M^{-1}: \Sigma_o \rightarrow 2^\Sigma$. If
+a set of events is partitioned into subsets, $\Sigma = \bigcup_i
+\Sigma_{i} \mid i \in \mathbb{N}$, the natural projection over the partition
+members is denoted as $M_i: \Sigma_i^* \rightarrow \Sigma_{i,o}^*$.
+
 Let $I := \{1,2,\ldots,n\} \subset  \mathbb{N}$ be an index set. A system is
 defined as a set of automata $\{G_{i \in I}\}$ and a correspondent set
 of languages $\{L_{i \in I}\}$. We use the term \emph{local} in context
@@ -95,7 +132,7 @@ the conditions require one language to have common events with the other one. In
 general, a system consists of many modules, and a language which is not
 diagnosable locally may have no common events with a language which can
 potentially change diagnosability, but have common events with other languages.
-In this case one can compose the all other languages with the faulty language,
+In this case one can compose all the other languages with the faulty language,
 reducing the system to the form of the trivial case. A formal description of
 such approach is given below.
 
@@ -103,8 +140,7 @@ The setup for the problem is following. Let a system be defined as a set of
 local languages $S := \{L_{i\in I}\}$, and let faulty behaviours be defined for
 any $i \in I$, i.e. each language $L_i$ can be disjoint into faulty and
 non-faulty sublanguages: $L_{i,f}$ and $L_{i,nf}$. We assume that $(\forall i
-\in I) L_i = P_i(L)$, i.e. each local language is globally consistent in terms
-of \cite{su_global_2005}.
+\in I)\left[ L_i = P_i(L)\right]$.
 
 First, we recall the definition of diagnosability of virtual modules. Let $J$ be
 a partition of $I$. Given the system $S$, $J$ and set of observable
@@ -113,7 +149,7 @@ where $\Sigma_j := \bigcup_i \Sigma_i,~
 	\Sigma_{j,o} := \bigcup_i \Sigma_{i,o} \mid 
 	i\in j$. 
 The system is modularly diagnosable with respect to $J$ and $\{M_j\}$ 
-if the following holds true:
+if the following holds:
 \begin{equation}
 	\begin{array}{l}
 		\forall(i \in I, s \in L_{i,f}, t \in L_{i,f}/s)
@@ -154,7 +190,7 @@ condition:
 % where $M'_j: (\Sigma_i \cup \Sigma_j)^* \rightarrow (\Sigma_{j,o}\backslash
 % \Sigma_i)^*$.
 Informally, the lemma imposes a requirement for the string $s$ to have an
-observable support in another language, which garanties that we can observe some
+observable support in another language, which guaranties that we can observe some
 events in that language before any continuation of the string $s$.
 Then, the lemma defines a condition which allows us to distinguish these
 observations from an observation of the string $u$.
@@ -191,22 +227,22 @@ all faulty strings from all non-faulty strings.
 From the lemma it can be seen that for one faulty sublanguage there can be a
 subset of languages with observable supports, satisfying the conditions. In
 order to make the system modularly diagnosable, thus, one needs to find a
-relevant partition, with a desired ditribution of modules. It worth to note,
+relevant partition, with a desired distribution of modules. It worth to note,
 that the partitioning implies that languages with faults are in subsets with the
 languages which have observable events. Thus, other languages which have no
 faults and have no observable events, as well the languages with observations
 which have no effect for the diagnosability property, will be in other subsets.
-Since it is enough to pick just one module satisfiying the conditions, we
+Since it is enough to pick just one module satisfying the conditions, we
 propose a procedure for this task, in the next section.
 
 \section{Algorithm to choose a module with observable support}
 Assume that the objective function is to have the number of modules in the
-sytems as many as possible, i.e. to have the maximal cardinality of the
-partitition $J$.
-Given an initial set of languages, let rank of $J$ be eqal to 0, i.e. $|J| =
-|I|$. Let $F$ denotes the subuset of languages with faults, and $M$ denotes the
+system as many as possible, i.e. to have the maximal cardinality of the
+partition $J$.
+Given an initial set of languages, let rank of $J$ be equal to 0, i.e. $|J| =
+|I|$. Let $F$ denotes the subset of languages with faults, and $M$ denotes the
 subset of languages with correspondent observable supports.
-Assume that it is alwasy possible to make the system modularly diagnosbile with
+Assume that it is always possible to make the system modularly diagnosable with
 respect to some virtual modules. Then we know that $(\forall f \in F)~\exists m
 \in M$. Let $F \cap M = \emptyset$ and $|M| \geq |F|$. Then, to make the system
 modularly diagnosable it is required, in the worst case, $|F|$ members of $M$.
@@ -239,39 +275,46 @@ diagnosable by minimal number of virtual modules:
   \item $(\forall j \in J, f \in j)$ update $j$ as follows: 
   	$j := j \cup \{m \in M \cap F\}$ if $M \cap F \neq \emptyset$,
  $j := j \cup \{m \in M\}$ otherwise, where $\{m\}$ is a singleton of the
- arbitrary choosen observable support for the given $f$, such that the new $j$
+ arbitrary chosen observable support for the given $f$, such that the new $j$
  is locally diagnosable; exclude $m$ from $k \in J \mid k \neq j$, and remove
  $k$ from $J$ if $k=\emptyset$.
 \end{enumerate} 
-The order the observable supports are verified in the procedure garanties that
+The order the observable supports are verified in the procedure guaranties that
 we consider, firstly, the languages which themselves contain the faulty
 sublanguages, thus maximizing the number of virtual modules in the system.
 
-It worth to note that the above algorithm can be augumented by additional
-criterias aimed, for instance, to decrease computational expences.
+It worth to note that the above algorithm can be augmented by additional
+criteria aimed, for instance, to decrease computational burden.
 
 % The objective function discribes a combinatorial optimisation problem, which can
 % be solved by linear programming methods.
 
-\section{Co-faulty language}
-Assume that given a language with faulty behaviour and a language which has an
-observable support, but it is not known for which language. It is now requred to
-verify if this is the observable support for either faulty or non-faulty
-sublanguages. If it is true, then the correspondent modules can be
-composed into a virtual module.
-According to the Lemma \ref{lem:virtual_module_is_diagnosable}, in order to
-decide if the virtual module is diagnosable we need to verify the necessary
-conditions for the all strings $P_i^{-1}(L_{i,f})$ and $P_i^{-1}(L_{i,nf})$.
-
+\section{Adjacency graph}
+A DES can be seen as a graph where its nodes represent the modules, and edges
+reflect the fact that some modules are synchronized with each other. This
+abstraction is often implicitly or explicitly used in approaches devoted to
+diagnosability of modular systems. In our approach we denote such graph as the
+\emph{adjacency graph}, formally defined as follows:
 \begin{definition}
 \label{def:graph}
-Given $\{L_i \mid i \in I \}$, let $\mathcal{G} = (I, E)$ be an undirected
-graph where $E \subseteq I \times I$ such that
+Given $\{L_i \mid i \in I \}$, let $\mathcal{G} = \left<I, E\right>$ be an
+undirected graph where $E \subseteq I \times I$ such that
 $$(\forall i, j \in I)(i, j) \in E \Leftrightarrow 
 	\Sigma_i \cap \Sigma_j \neq \emptyset \mid i \neq j.$$
 \end{definition}
 % Recall that in graph theory a simple path is a path in a graph which does not
 % have repeating vertices.
+ 
+\section{Co-faulty language}
+
+Assume that given a language with faulty behaviour and a language which has an
+observable support, but it is not known for which language. It is now required to
+verify if this is the observable support for either faulty or non-faulty
+sublanguages. If it is true, then the correspondent modules can be
+composed into a virtual module.
+According to the Lemma \ref{lem:virtual_module_is_diagnosable}, in order to
+decide if the virtual module is diagnosable we need to verify the necessary
+conditions for all the strings $P_i^{-1}(L_{i,f})$ and $P_i^{-1}(L_{i,nf})$.
 
 
  \begin{definition}
@@ -279,8 +322,20 @@ $$(\forall i, j \in I)(i, j) \in E \Leftrightarrow
 Given $i, j \in I$, $L_{i,f} \subseteq L_i$,
 we say that a sublanguage $L_{j,cf} \subseteq L_j$ is \emph{co-faulty} with
 respect to $L_{i,f}$ if 
-$$\forall s \in L_{j,cf}, P_j^{-1}(s) \subseteq 
-	P_i^{-1}(L_{i,f}) \backslash P_i^{-1}(L_{i,nf}).$$
+$$
+	(\forall s \in L_{j,cf})
+	\left[
+		P_j^{-1}(s) \subseteq P_i^{-1}(L_{i,f}) \backslash P_i^{-1}(L_{i,nf})
+	\right],
+$$
+and a sublanguage $L_{j,cnf} \subseteq L_j$ is
+\emph{co-non-faulty} with respect to $L_{i,nf}$ if 
+$$
+	(\forall s \in L_{j,cnf})
+	\left[
+		P_j^{-1}(s) \subseteq P_i^{-1}(L_{i,nf}) \backslash P_i^{-1}(L_{i,f})
+	\right].
+$$
 \end{definition}
 
 
@@ -289,18 +344,21 @@ $$\forall s \in L_{j,cf}, P_j^{-1}(s) \subseteq
 Given $L_{i,f} \mid i \in I$ and set $\{L_{j,cf} \subseteq L_j \mid j \in J
 \subseteq I, j \neq i\}$ where $L_{j,cf}$ is co-faulty with respect to $L_{i,f}$. 
 For any $j \in J$ the $L_{j,cf}$ is not empty only if exists a path between $i$
-and $j$ in the graph.
+and $j$ in the adjacency graph $\mathcal{G}$.
 \end{lemma}
 
-\begin{proof}(Sketch) 
-Let $I = \{i, j\}$ and a faulty non empty sublanguage
-$L_{i,f} \subseteq L_i$. Assume that $L_{j,cf} \subseteq L_j$ is not
-empty, and there is no path between $i$ and $j$ in the graph, i.e.
-$\Sigma_i \cap \Sigma_j = \emptyset$. \ldots by properties of intersection of
-inverse projections (parallel composition).
+\begin{proof} 
+Trivially, by induction from the definition of parallel composition of automata
+as a natural representation of parallel composition for languages.
+% (Sketch) 
+% Let $I = \{i, j\}$ and a faulty non empty sublanguage
+% $L_{i,f} \subseteq L_i$. Assume that $L_{j,cf} \subseteq L_j$ is not
+% empty, and there is no path between $i$ and $j$ in the graph, i.e.
+% $\Sigma_i \cap \Sigma_j = \emptyset$. \ldots by properties of intersection of
+% inverse projections (parallel composition).
 \end{proof}
 
-[May exist more then one paths between two vertices]  
+Clearly, the above lemma holds also for co-non-faulty languages.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Review of existing approaches}
@@ -319,8 +377,8 @@ satisfies the conditions:
   \item the string contains observable events;
   \item the string is not blocked in the global language. 
 \end{enumerate}
-Supremum implies that the all strings satisfying the above conditions have
-beed found.
+Supremum implies that all the strings satisfying the above conditions have
+been found.
 
 In words, the CPGS algorithm consequently computes the projection to the common
 events and then the parallel composition of this projection with a next module.
@@ -329,7 +387,7 @@ procedure is repeated with each module placed as the final in the sequence.
 
 The order the modules are placed in the sequence for the algorithm may be
 random. Since here only common events cause growth of the composed language,
-intuitevely, the ordering should be done with respect to them. Indeed, the
+intuitively, the ordering should be done with respect to them. Indeed, the
 article presents a heuristic ordering procedure for that, and introduces some
 parameters described below.
 
@@ -338,7 +396,7 @@ two languages as follows:
 \begin{equation}
 	A_{i,j} = \frac{| X_i \parallel X_j |}{|X_i|\times |X_j|}.
 \end{equation}
-It is the ratio of the minimal state space cardnality of the actual parallel
+It is the ratio of the minimal state space cardinality of the actual parallel
 composition result to the state space cardinality of the composition in the
 worst case.
 
@@ -360,7 +418,7 @@ parameter $B$ implies less memory for the result of the projection. However,
 trying to minimize $B$ can lead to the increasing of $A$. Thus, the authors
 minimize both $A$ and $B$. Since at each step of the algorithm only one module is
 selected, the parameters can not be minimized independently. Therefore, the
-product of $A$ and $B$ was choosen to be minimized:
+product of $A$ and $B$ was chosen to be minimized:
 \begin{equation}
 	C = A \times B = 
 		\frac{| P_{\Sigma_i \cup \Sigma_j \rightarrow \Sigma_i \cap \Sigma_j}
@@ -368,7 +426,7 @@ product of $A$ and $B$ was choosen to be minimized:
 		{|X_i|\times |X_j|}.
 \end{equation}
 
-In computer science the algorithm the authors use is called \emph{gready
+In computer science the algorithm the authors use is called \emph{greedy
 algorithm}. Here it starts with a random module, and makes a local optimal
 choice based on the value of parameters $C$ calculated for the candidate set.
 The candidate set includes all the neighbor modules except the goal module. If
@@ -382,6 +440,32 @@ separate parts (star shape).
 % However, the space complexity can be impoved up to $n|X|$ if the splitted parts
 % are processed separately first, and then the goal module is processed with all
 % of them. << Too BIG complexity difference. Check it twice!
+
+\newpage
+
+Let $J$ be a partition of $I\subset \mathbb{N}$. Given the system $S$, $J$ and set of
+observable projections $\{M_j := \Sigma_j^* \rightarrow \Sigma_{j,o}^* \mid j \in J \}$
+where $\Sigma_j := \bigcup_i \Sigma_i,~ 
+	\Sigma_{j,o} := \bigcup_i \Sigma_{i,o} \mid 
+	i\in j$. 
+The system $S$ is modularly diagnosable with respect to $J$ and $\{M_j\}$ 
+if the following holds:
+$$
+	\begin{array}{l}
+		\forall(i \in I, s \in L_{i,f}, t \in L_{i,f}/s)
+		\\
+		(\exists n \in \mathbb{N})
+		(|t| \geq n)
+		\\
+		\left[ M_j(P_i^{-1}(st)) \cap M_j(P_i^{-1}(L_{i,nf})) = \emptyset \right].
+	\end{array}
+$$
+
+% \newpage
+% $$
+% |X| = 2^{10^{15}}
+% $$
+% \newpage
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
