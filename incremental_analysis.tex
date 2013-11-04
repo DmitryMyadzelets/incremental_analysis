@@ -296,12 +296,32 @@ abstraction is often implicitly or explicitly used in approaches devoted to
 diagnosability of modular systems. In our approach we denote such graph as the
 \emph{adjacency graph}, formally defined as follows:
 \begin{definition}
-\label{def:graph}
-Given $\{L_i \mid i \in I \}$, let $\mathcal{G} = \left<I, E\right>$ be an
-undirected graph where $E \subseteq I \times I$ such that
+\label{def:graph_events}
+Given $\{\Sigma_i \mid i \in I \}$, let $\mathcal{G} = \left<I, E\right>$ be an
+undirected adjacency graph where $E \subseteq I \times
+I$ such that 
 $$(\forall i, j \in I)(i, j) \in E \Leftrightarrow 
 	\Sigma_i \cap \Sigma_j \neq \emptyset \mid i \neq j.$$
 \end{definition}
+We extend this definition over languages.
+\begin{definition}
+\label{def:graph_languages}
+The adjacency graph over a set of languages $\{L_i \mid i \in I \}$ is a graph 
+$\mathcal{G} = \left<I, E\right>$ where $E \subseteq I \times
+I$ such that 
+$$(\forall i, j \in I)(i, j) \in E \Leftrightarrow
+	P_{i,j}^{-1}(L_i) \cap P_{i,j}^{-1}(L_j) \neq \emptyset \mid i \neq j, 
+$$
+where 
+$P_{i,j} : (\Sigma_i \cup \Sigma_j)^* \rightarrow (\Sigma_i \cap \Sigma_j)^*$
+, and  
+$P_{i,j}^{-1}(s) := \{t \in (\Sigma_i \cup \Sigma_j)^* \mid P_{i,j}(t) = s\}$.
+\end{definition}
+
+By definition, the adjacency graph over $\{\Sigma_i\}$ is a supergraph for any
+graph over $\{L_i \subseteq \Sigma_i\}$, and the graph over $\{L'_i \subseteq
+L_i\}$ is a subgraph of the graph over $\{L_i\}$.
+
 % Recall that in graph theory a simple path is a path in a graph which does not
 % have repeating vertices.
  
