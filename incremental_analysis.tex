@@ -24,6 +24,9 @@ Systems}, pdfauthor={Dmitry Myadzelets}, bookmarks=false,
 \usetikzlibrary{decorations.pathreplacing}
 \usetikzlibrary{arrows,positioning,automata,shadows,fit,shapes}
 
+\usepackage{algpseudocode}
+
+
 \begin{document}
 
 \title{How to Make a Discrete-Event System \\ Modularly Diagnosable.
@@ -67,6 +70,7 @@ Discrete Event Systems, Modular Structure, Distributed Diagnosability
 \newtheorem{assumption}{Assumption}
 \newtheorem{corollary}{Corollary}
 \newtheorem{example}{Example}
+\newtheorem{algorithm}{Algorithm}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -306,8 +310,8 @@ $$(\forall i, j \in I)(i, j) \in E \Leftrightarrow
 We extend this definition over languages.
 \begin{definition}
 \label{def:graph_languages}
-The adjacency graph over a set of languages $\{L_i \mid i \in I \}$ is a graph 
-$\mathcal{G} = \left<I, E\right>$ where $E \subseteq I \times
+The adjacency graph over a set of languages $\{L_i \subseteq \Sigma_i^* \mid i
+\in I \}$ is a graph $\mathcal{G} = \left<I, E\right>$ where $E \subseteq I \times
 I$ such that 
 $$(\forall i, j \in I)(i, j) \in E \Leftrightarrow
 	P_{i,j}^{-1}(L_i) \cap P_{i,j}^{-1}(L_j) \neq \emptyset \mid i \neq j, 
@@ -319,8 +323,8 @@ $P_{i,j}^{-1}(s) := \{t \in (\Sigma_i \cup \Sigma_j)^* \mid P_{i,j}(t) = s\}$.
 \end{definition}
 
 By definition, the adjacency graph over $\{\Sigma_i\}$ is a supergraph for any
-graph over $\{L_i \subseteq \Sigma_i\}$, and the graph over $\{L'_i \subseteq
-L_i\}$ is a subgraph of the graph over $\{L_i\}$.
+graph over $\{L_i \subseteq \Sigma_i\}$, and any adjacency graph over $\{L'_i
+\subseteq L_i\}$ is a subgraph of the adjacency graph over $\{L_i\}$.
 
 % Recall that in graph theory a simple path is a path in a graph which does not
 % have repeating vertices.
@@ -328,10 +332,9 @@ L_i\}$ is a subgraph of the graph over $\{L_i\}$.
 \section{Co-faulty language}
 
 Assume that given a language with faulty behaviour and a language which has an
-observable support, but it is not known for which language. It is now required to
-verify if this is the observable support for either faulty or non-faulty
-sublanguages. If it is true, then the correspondent modules can be
-composed into a virtual module.
+observable support. It is now required to verify if the observable support is
+either for the faulty or non-faulty sublanguages. If it is true, then the
+correspondent modules can be composed into a virtual module.
 According to the Lemma \ref{lem:virtual_module_is_diagnosable}, in order to
 decide if the virtual module is diagnosable we need to verify the necessary
 conditions for all the strings $P_i^{-1}(L_{i,f})$ and $P_i^{-1}(L_{i,nf})$.
@@ -358,139 +361,183 @@ $$
 $$
 \end{definition}
 
+In words, the co-faulty sublanguage is a sublanguage which satisfies two
+conditions:
+a) it is the sublanguage of projection of the global faulty language
+to the local language; b) the sublanguage is not co-non-faulty.
+Similarly, the co-non-faulty language is a sublanguage which satisfies
+conditions:
+a) it is the sublanguage of projection of the global non-faulty language
+to the local language; b) the sublanguage is not co-faulty.
 
-\begin{lemma}
-\label{lem:co-faulty-if-path}
-Given $L_{i,f} \mid i \in I$ and set $\{L_{j,cf} \subseteq L_j \mid j \in J
-\subseteq I, j \neq i\}$ where $L_{j,cf}$ is co-faulty with respect to $L_{i,f}$. 
-For any $j \in J$ the $L_{j,cf}$ is not empty only if exists a path between $i$
-and $j$ in the adjacency graph $\mathcal{G}$.
-\end{lemma}
+Given global faulty and non-faulty sublanguages, one can compute the local
+co-faulty language $L_{i,cf}$ as follows. Firstly, apply a corresponded
+projection for the global sublanguages, and then subtract from the results their
+intersection:
+\begin{equation}
+\label{eq:co-faulty_from_global}
+	\begin{array}{l}
+		L_{i,cf} := P_i(L_f) \backslash P_i(L_{nf})\\ 
+		L_{i,cnf} := P_i(L_{nf}) \backslash P_i(L_{f}).	
+	\end{array}
+\end{equation}
+However, we are interested to compute a local co-faulty
+language without computing the global language. Below we present the algorithm
+which, given a module with the co-faulty language defined, computes the
+co-faulty languages of an adjacent module.
 
-\begin{proof} 
-Trivially, by induction from the definition of parallel composition of automata
-as a natural representation of parallel composition for languages.
-% (Sketch) 
-% Let $I = \{i, j\}$ and a faulty non empty sublanguage
-% $L_{i,f} \subseteq L_i$. Assume that $L_{j,cf} \subseteq L_j$ is not
-% empty, and there is no path between $i$ and $j$ in the graph, i.e.
-% $\Sigma_i \cap \Sigma_j = \emptyset$. \ldots by properties of intersection of
-% inverse projections (parallel composition).
-\end{proof}
+% In the following, when we assume that statements for co-faulty sublanguages also
+% valid for co-non-faulty sublanguages.
 
-Clearly, the above lemma holds also for co-non-faulty languages.
+
+
+% By definition, any faulty sublanguage is co-faulty with respect to itself.
+% We use this property to establish relations  
+% is used in the following lemma which establishes relation
+% of co-faulty languages.
+% 
+% 
+% 
+% \begin{lemma}
+% \label{lem:co-faulty-if-path}
+% Given a set of languages $\{L_i \subseteq \Sigma_i^* \mid i \in I \}$ and the 
+% adjacency graph $\mathcal{G}$ over this set. Any two vertexes $i, j \in I$,
+% connected in the graph $\mathcal{G}$, also connected in the subgraph
+% $\mathcal{G}_f$ over the set of co-faulty sublanguages $\{L_{i,cf}\}$, only if
+% $$
+% .
+% $$
+% Given $L_{i,f} \mid i \in I$ and set $\{L_{j,cf} \subseteq L_j \mid j \in J
+% \subseteq I, j \neq i\}$ where $L_{j,cf}$ is co-faulty with respect to $L_{i,f}$. 
+% For any $j \in J$ the $L_{j,cf}$ is not empty only if exists a path between $i$
+% and $j$ in the adjacency graph $\mathcal{G}$ over languages.
+% \end{lemma}
+
+% \begin{proof} 
+% Trivially, by induction from the definition of parallel composition of automata
+% as a natural representation of parallel composition for languages.
+% % (Sketch) 
+% % Let $I = \{i, j\}$ and a faulty non empty sublanguage
+% % $L_{i,f} \subseteq L_i$. Assume that $L_{j,cf} \subseteq L_j$ is not
+% % empty, and there is no path between $i$ and $j$ in the graph, i.e.
+% % $\Sigma_i \cap \Sigma_j = \emptyset$. \ldots by properties of intersection of
+% % inverse projections (parallel composition).
+% \end{proof}
+
+\begin{algorithm} Computing the co-faulty and co-non-faulty languages of an
+adjacent module.
+
+\begin{algorithmic}[1]
+	\Require $L_i, L_{i,cf}, L_{i,cnf}, L_j$
+	\State $\Sigma_c \leftarrow \Sigma_i \cap \Sigma_j$
+	\State $F \leftarrow P_{\Sigma_i \rightarrow \Sigma_c}(L_{i,f})$
+	\State $N \leftarrow P_{\Sigma_i \rightarrow \Sigma_c}(L_{i,nf})$
+	\State $L_{j,cf} \leftarrow 
+		(P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(F\backslash N)) \cap L_j$
+	\State $L_{j,cnf} \leftarrow 
+		(P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(N\backslash F)) \cap L_j$
+	\\
+	\Return $L_{j,cf}, L_{j,cnf}$
+\end{algorithmic}
+\end{algorithm}
+
+[Description of the steps?]
+% Given $L_i, L_j \mid i,j \in I, i \neq j$ where $L_i$ is partitioned into
+% $L_{i,cf}, L_{i,cnf}$.
+
+Note, that the above algorithm returns the co-faulty sublanguages of the module
+$j$ which is co-faulty with respect to the module $i$. However, this
+sublanguage, in general, is not equal to the one computed from the global faulty
+sublanguage, as in \ref{eq:co-faulty_from_global}. [since there may be many
+paths from $i$ to $j$ in a correspondent adjacency graph]
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Review of existing approaches}
+% \section{Review of existing approaches}
+% 
+% The work \cite{su_global_2005} presents an algorithm named \emph{Computational
+% Procedure for Global Consistency (CPGS)} to find the \emph{supremal
+% global support}. Given a system 
+% $\{ L_i \mid i \in I \subset \mathbb{N} \}$ 
+% and its projections $\{ M_i \}$, the supremal global support is
+% \begin{equation}
+% 	Sup\Gamma = \{ P_i(\parallel M_i^{-1}M_i(L_i))\}.
+% \end{equation}
+% Informally, a string of a local language is in the global support if the string
+% satisfies the conditions:
+% \begin{enumerate}
+%   \item the string contains observable events;
+%   \item the string is not blocked in the global language. 
+% \end{enumerate}
+% Supremum implies that all the strings satisfying the above conditions have
+% been found.
+% 
+% In words, the CPGS algorithm consequently computes the projection to the common
+% events and then the parallel composition of this projection with a next module.
+% Thus, the last language in the sequence is equal to $P_i(L)$. The above
+% procedure is repeated with each module placed as the final in the sequence.
+% 
+% The order the modules are placed in the sequence for the algorithm may be
+% random. Since here only common events cause growth of the composed language,
+% intuitively, the ordering should be done with respect to them. Indeed, the
+% article presents a heuristic ordering procedure for that, and introduces some
+% parameters described below.
+% 
+% The first parameter represents the space complexity of parallel composition of
+% two languages as follows:
+% \begin{equation}
+% 	A_{i,j} = \frac{| X_i \parallel X_j |}{|X_i|\times |X_j|}.
+% \end{equation}
+% It is the ratio of the minimal state space cardinality of the actual parallel
+% composition result to the state space cardinality of the composition in the
+% worst case.
+% 
+% The second parameter represents the space complexity of natural projection with
+% respect to the events common for two languages:
+% \begin{equation}
+% 	B_{i,j} = \frac{
+% 		| P_{\Sigma_i \cup \Sigma_j \rightarrow \Sigma_i \cap \Sigma_j}
+% 		(X_i \parallel X_j) |}
+% 		{| X_i \parallel X_j |}.
+% \end{equation}
+% It is the ratio of the minimal state space cardinality of the projection to the
+% state space cardinality of the original language.
+% 
+% The lower the parameter $A$ the higher the coupling of two modules, i.e. more
+% common events the modules have, and less memory is required for the computation
+% of the parallel composition. Hence, we are interested to minimize $A$. The lower
+% parameter $B$ implies less memory for the result of the projection. However,
+% trying to minimize $B$ can lead to the increasing of $A$. Thus, the authors
+% minimize both $A$ and $B$. Since at each step of the algorithm only one module is
+% selected, the parameters can not be minimized independently. Therefore, the
+% product of $A$ and $B$ was chosen to be minimized:
+% \begin{equation}
+% 	C = A \times B = 
+% 		\frac{| P_{\Sigma_i \cup \Sigma_j \rightarrow \Sigma_i \cap \Sigma_j}
+% 		(X_i \parallel X_j) |}
+% 		{|X_i|\times |X_j|}.
+% \end{equation}
+% 
+% In computer science the algorithm the authors use is called \emph{greedy
+% algorithm}. Here it starts with a random module, and makes a local optimal
+% choice based on the value of parameters $C$ calculated for the candidate set.
+% The candidate set includes all the neighbor modules except the goal module. If
+% the set of neighbors is empty then it includes all unprocessed modules except
+% the goal module. The algorithm finishes after no any but the goal module can be
+% included to the candidate set.
+% 
+% The time complexity of the algorithm is $O(n^2)$. It requires $|X|^n$ state
+% space in the worst case, when a goal module splits the coupling graph into
+% separate parts (star shape). 
+% % However, the space complexity can be impoved up to $n|X|$ if the splitted parts
+% % are processed separately first, and then the goal module is processed with all
+% % of them. << Too BIG complexity difference. Check it twice!
 
-The work \cite{su_global_2005} presents an algorithm named \emph{Computational
-Procedure for Global Consistency (CPGS)} to find the \emph{supremal
-global support}. Given a system 
-$\{ L_i \mid i \in I \subset \mathbb{N} \}$ 
-and its projections $\{ M_i \}$, the supremal global support is
-\begin{equation}
-	Sup\Gamma = \{ P_i(\parallel M_i^{-1}M_i(L_i))\}.
-\end{equation}
-Informally, a string of a local language is in the global support if the string
-satisfies the conditions:
-\begin{enumerate}
-  \item the string contains observable events;
-  \item the string is not blocked in the global language. 
-\end{enumerate}
-Supremum implies that all the strings satisfying the above conditions have
-been found.
-
-In words, the CPGS algorithm consequently computes the projection to the common
-events and then the parallel composition of this projection with a next module.
-Thus, the last language in the sequence is equal to $P_i(L)$. The above
-procedure is repeated with each module placed as the final in the sequence.
-
-The order the modules are placed in the sequence for the algorithm may be
-random. Since here only common events cause growth of the composed language,
-intuitively, the ordering should be done with respect to them. Indeed, the
-article presents a heuristic ordering procedure for that, and introduces some
-parameters described below.
-
-The first parameter represents the space complexity of parallel composition of
-two languages as follows:
-\begin{equation}
-	A_{i,j} = \frac{| X_i \parallel X_j |}{|X_i|\times |X_j|}.
-\end{equation}
-It is the ratio of the minimal state space cardinality of the actual parallel
-composition result to the state space cardinality of the composition in the
-worst case.
-
-The second parameter represents the space complexity of natural projection with
-respect to the events common for two languages:
-\begin{equation}
-	B_{i,j} = \frac{
-		| P_{\Sigma_i \cup \Sigma_j \rightarrow \Sigma_i \cap \Sigma_j}
-		(X_i \parallel X_j) |}
-		{| X_i \parallel X_j |}.
-\end{equation}
-It is the ratio of the minimal state space cardinality of the projection to the
-state space cardinality of the original language.
-
-The lower the parameter $A$ the higher the coupling of two modules, i.e. more
-common events the modules have, and less memory is required for the computation
-of the parallel composition. Hence, we are interested to minimize $A$. The lower
-parameter $B$ implies less memory for the result of the projection. However,
-trying to minimize $B$ can lead to the increasing of $A$. Thus, the authors
-minimize both $A$ and $B$. Since at each step of the algorithm only one module is
-selected, the parameters can not be minimized independently. Therefore, the
-product of $A$ and $B$ was chosen to be minimized:
-\begin{equation}
-	C = A \times B = 
-		\frac{| P_{\Sigma_i \cup \Sigma_j \rightarrow \Sigma_i \cap \Sigma_j}
-		(X_i \parallel X_j) |}
-		{|X_i|\times |X_j|}.
-\end{equation}
-
-In computer science the algorithm the authors use is called \emph{greedy
-algorithm}. Here it starts with a random module, and makes a local optimal
-choice based on the value of parameters $C$ calculated for the candidate set.
-The candidate set includes all the neighbor modules except the goal module. If
-the set of neighbors is empty then it includes all unprocessed modules except
-the goal module. The algorithm finishes after no any but the goal module can be
-included to the candidate set.
-
-The time complexity of the algorithm is $O(n^2)$. It requires $|X|^n$ state
-space in the worst case, when a goal module splits the coupling graph into
-separate parts (star shape). 
-% However, the space complexity can be impoved up to $n|X|$ if the splitted parts
-% are processed separately first, and then the goal module is processed with all
-% of them. << Too BIG complexity difference. Check it twice!
-
-\newpage
-
-Let $J$ be a partition of $I\subset \mathbb{N}$. Given the system $S$, $J$ and set of
-observable projections $\{M_j := \Sigma_j^* \rightarrow \Sigma_{j,o}^* \mid j \in J \}$
-where $\Sigma_j := \bigcup_i \Sigma_i,~ 
-	\Sigma_{j,o} := \bigcup_i \Sigma_{i,o} \mid 
-	i\in j$. 
-The system $S$ is modularly diagnosable with respect to $J$ and $\{M_j\}$ 
-if the following holds:
-$$
-	\begin{array}{l}
-		\forall(i \in I, s \in L_{i,f}, t \in L_{i,f}/s)
-		\\
-		(\exists n \in \mathbb{N})
-		(|t| \geq n)
-		\\
-		\left[ M_j(P_i^{-1}(st)) \cap M_j(P_i^{-1}(L_{i,nf})) = \emptyset \right].
-	\end{array}
-$$
-
-% \newpage
-% $$
-% |X| = 2^{10^{15}}
-% $$
-% \newpage
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Algorithm}
-\label{sec:Algorithm}
+% \section{Algorithm}
+% \label{sec:Algorithm}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
