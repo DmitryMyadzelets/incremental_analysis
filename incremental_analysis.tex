@@ -346,29 +346,20 @@ Given $i, j \in I$, $L_{i,f} \subseteq L_i$,
 we say that a sublanguage $L_{j,cf} \subseteq L_j$ is \emph{co-faulty} with
 respect to $L_{i,f}$ if 
 $$
-	(\forall s \in L_{j,cf})
-	\left[
-		P_j^{-1}(s) \subseteq P_i^{-1}(L_{i,f}) \backslash P_i^{-1}(L_{i,nf})
-	\right],
-$$
-and a sublanguage $L_{j,cnf} \subseteq L_j$ is
-\emph{co-non-faulty} with respect to $L_{i,nf}$ if 
-$$
-	(\forall s \in L_{j,cnf})
-	\left[
-		P_j^{-1}(s) \subseteq P_i^{-1}(L_{i,nf}) \backslash P_i^{-1}(L_{i,f})
-	\right].
-$$
-\end{definition}
-
-Alternatively, a sublanguage $L_{j,cf} \subseteq L_j$ is \emph{co-faulty} with
-respect to $L_{i,f}$ if 
-$$
 	(\forall s \in L_{j,cf})(\forall t \in P_iP_j^{-1}(s))
 	\left[
 		t \in L_{i,f} \land t \not \in L_{i,nf}   
 	\right].
 $$ 
+and a sublanguage $L_{j,cnf} \subseteq L_j$ is
+\emph{co-non-faulty} with respect to $L_{i,nf}$ if 
+$$
+	(\forall s \in L_{j,cnf})(\forall t \in P_iP_j^{-1}(s))
+	\left[
+		t \not \in L_{i,f} \land t \in L_{i,nf}   
+	\right].
+$$ 
+\end{definition}
 
 In words, the co-faulty sublanguage is a sublanguage which satisfies two
 conditions:
