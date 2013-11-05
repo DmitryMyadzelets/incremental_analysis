@@ -197,7 +197,7 @@ Informally, the lemma imposes a requirement for the string $s$ to have an
 observable support in another language, which guaranties that we can observe some
 events in that language before any continuation of the string $s$.
 Then, the lemma defines a condition which allows us to distinguish these
-observations from an observation of the string $u$.
+observations from the observation of the string $u$.
 
 Now, we rewrite Lemma 3 from the first article in the context of our setup, as
 follows:
@@ -361,23 +361,32 @@ $$
 $$
 \end{definition}
 
+Alternatively, a sublanguage $L_{j,cf} \subseteq L_j$ is \emph{co-faulty} with
+respect to $L_{i,f}$ if 
+$$
+	(\forall s \in L_{j,cf})(\forall t \in P_iP_j^{-1}(s))
+	\left[
+		t \in L_{i,f} \land t \not \in L_{i,nf}   
+	\right].
+$$ 
+
 In words, the co-faulty sublanguage is a sublanguage which satisfies two
 conditions:
 a) it is the sublanguage of projection of the global faulty language
 to the local language; b) the sublanguage is not co-non-faulty.
-Similarly, the co-non-faulty language is a sublanguage which satisfies
+Similarly, the co-non-faulty sublanguage is a sublanguage which satisfies
 conditions:
 a) it is the sublanguage of projection of the global non-faulty language
 to the local language; b) the sublanguage is not co-faulty.
 
 Given global faulty and non-faulty sublanguages, one can compute the local
-co-faulty language $L_{i,cf}$ as follows. Firstly, apply a corresponded
+co-faulty sublanguage $L_{i,cf}$ as follows. Firstly, apply a corresponded
 projection for the global sublanguages, and then subtract from the results their
 intersection:
 \begin{equation}
 \label{eq:co-faulty_from_global}
 	\begin{array}{l}
-		L_{i,cf} := P_i(L_f) \backslash P_i(L_{nf})\\ 
+		L_{i,cf} := P_i(L_f) \backslash P_i(L_{nf}),\\ 
 		L_{i,cnf} := P_i(L_{nf}) \backslash P_i(L_{f}).	
 	\end{array}
 \end{equation}
@@ -426,30 +435,51 @@ co-faulty languages of an adjacent module.
 
 \begin{algorithm} Computing the co-faulty and co-non-faulty languages of an
 adjacent module.
-
+\label{alg:partial_co_faulty}
 \begin{algorithmic}[1]
 	\Require $L_i, L_{i,cf}, L_{i,cnf}, L_j$
-	\State $\Sigma_c \leftarrow \Sigma_i \cap \Sigma_j$
-	\State $F \leftarrow P_{\Sigma_i \rightarrow \Sigma_c}(L_{i,f})$
-	\State $N \leftarrow P_{\Sigma_i \rightarrow \Sigma_c}(L_{i,nf})$
+	\State $\Sigma_c \leftarrow \Sigma_i \cap \Sigma_j$ 
+		\label{alg:pcf_get_common}
+	\State $F \leftarrow P_{\Sigma_i \rightarrow \Sigma_c}(L_{i,cf})$
+		\label{alg:pcf_get_common_f}
+	\State $N \leftarrow P_{\Sigma_i \rightarrow \Sigma_c}(L_{i,cnf})$
+		\label{alg:pcf_get_common_n}
+	\State $K \leftarrow F \cap N$
+		\label{alg:pcf_get_fn}
+	\State $F \leftarrow F\backslash K$
+		\label{alg:pcf_get_f}
+	\State $N \leftarrow N\backslash K$
+		\label{alg:pcf_get_n}
 	\State $L_{j,cf} \leftarrow 
-		(P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(F\backslash N)) \cap L_j$
+		(P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(F)) \cap L_j$
+		\label{alg:pcf_get_cf}
 	\State $L_{j,cnf} \leftarrow 
-		(P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(N\backslash F)) \cap L_j$
+		(P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(N)) \cap L_j$
+		\label{alg:pcf_get_cnf}
 	\\
 	\Return $L_{j,cf}, L_{j,cnf}$
 \end{algorithmic}
 \end{algorithm}
 
-[Description of the steps?]
-% Given $L_i, L_j \mid i,j \in I, i \neq j$ where $L_i$ is partitioned into
-% $L_{i,cf}, L_{i,cnf}$.
+At the steps \ref{alg:pcf_get_common_f} and \ref{alg:pcf_get_common_n} of the
+above algorithm we compute projections of known faulty and non-faulty languages.
+Note, that natural projection operation preserves faulty property of languages,
+as well as construction of correspondent deterministic automata. The both
+languages $L_{i,cf}$ and $L_{i,cnf}$ are not prefix-closed, in general. Then,
+their projections $F$ and $N$, with respect to the common events, may be not
+prefix-closed either. At the step \ref{alg:pcf_get_fn} the prefix common to the
+$F$ and $N$ is computed. Then, at the steps \ref{alg:pcf_get_f} and
+\ref{alg:pcf_get_n} we update languages subtracting their common prefix.
+Finally, we compute co-faulty and co-non-faulty languages for the adjacent
+module. In this sequence of operations at the steps
+\ref{alg:pcf_get_common_f}--\ref{alg:pcf_get_cnf} new automata for
+the correspondent languages are constructed or modified.
 
-Note, that the above algorithm returns the co-faulty sublanguages of the module
-$j$ which is co-faulty with respect to the module $i$. However, this
-sublanguage, in general, is not equal to the one computed from the global faulty
-sublanguage, as in \ref{eq:co-faulty_from_global}. [since there may be many
-paths from $i$ to $j$ in a correspondent adjacency graph]
+Note, that the the Algorithm \ref{alg:partial_co_faulty} returns the co-faulty
+sublanguage of the module $j$ which is co-faulty with respect to the module $i$.
+However, this sublanguage, in general, is not equal to the one computed from the
+global faulty sublanguage, as in \ref{eq:co-faulty_from_global}. [since there
+may be many paths from $i$ to $j$ in a correspondent adjacency graph]
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
