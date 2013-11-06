@@ -76,6 +76,44 @@ Discrete Event Systems, Modular Structure, Distributed Diagnosability
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
+\begin{figure}
+\begin{tikzpicture}
+% \draw[help lines] (0,0) grid (5,3);
+% Axis 
+\draw [thick, <->] 
+	(0,3) node[left]{Events} -- 
+	(0,0) node[below]{0} -- 
+	(6,0) node[below]{1} -- 
+	(6,3) node[right]{States};
+\node [below] at (2.5,0) {1/Number of modules};
+% Curve of the average size of modules
+\draw[blue, thick] (0.1,.1) to [out=0,in=-170] (6,2.5); 
+% Curve of the average size of diagnosers
+\draw[red, thick, dashed] (0.1,.3) to [out=0,in=-140] (4,3); 
+% Curve of the amount of communication
+\draw[orange, thick, dotted] (0.1,2.5) to [out=-15,in=160] (3.5,0); 
+% Line of the point with virtual modularity
+\draw[dashed] (3.5,0) -- (3.5,3);
+% Point of virtual modularity  
+\draw [fill] (3.5,0) circle [radius=0.05];
+\draw [fill, blue] (3.5,1.42) circle[radius=0.05]; 
+\node[align=left, below right] at (3.5,1.5) {Virtual\\ modules}; 
+\draw [fill, red] (3.5,2.55) circle [radius=0.05];
+% Legend
+\draw[blue, thick] (0,-1) -- (1,-1);
+\node[right] at (1,-1) {Average size of module (states)};
+\draw[red, thick, dashed] (0,-1.5) -- (1,-1.5);
+\node[right] at (1,-1.5) {Average size of diagnoser (states)};
+\draw[orange, thick, dotted] (0,-2) -- (1,-2);
+\node[right] at (1,-2) {Amount of communications (events)};
+
+
+
+\end{tikzpicture}
+\caption{Do not forget!
+Make it explicit enough that readers
+can figure out what you are doing.}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preliminaries}
