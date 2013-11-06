@@ -80,47 +80,55 @@ Discrete Event Systems, Modular Structure, Distributed Diagnosability
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preliminaries}
 \label{sec:Preliminaries}
-The notation used in this document is adopted from
+
+\subsection{Notation}
+The notation used in this document is the one in
 \cite{cassandras_introduction_2010}.
 Let $\Sigma$ be a finite set of events. A sequence of events is a string.
 $\Sigma^*$ denotes a set of all finite strings over $\Sigma$.
 $L\subseteq\Sigma^*$ is a language over $\Sigma$. Given strings $s$ and $t$,
 $st$ is their concatenation. Given strings $s$ and $w$, $w$ is a prefix of $s$
 if exists $t$ such that $wt = s$. Prefix closure of $L$, denoted by
-$\overline{L}$ is a set of all prefixes of all strings in $L$.
+$\overline{L}$ is a set of all prefixes of all the strings in $L$.
 If $\overline{L} = L$ then $L$ is prefix-closed. The post language of $L$ after
-a string $s$ is denoted as $L/s$, i.e. $L/s = \{t\mid st \in L\}$. We
+a string $s$ is denoted as $L/s$, i.e. $L/s := \{t\mid st \in L\}$. We
 write $\sigma \in s$ if the event $\sigma \in \Sigma$ appears in the string $s
 \in \Sigma^*$. If $\{s\}$ is a singleton, we write $s$ for operations on
 languages.
 
-An automaton $G$ is a tuple $$G=(X,\Sigma,\Delta,x_0, X_m),$$ where $X$ is a
-set of states, $x_0 \in X$ is an initial state, $X_m \subseteq X$ is the set of
-marked states, and $\Delta: X \times \Sigma \rightarrow X$ is the transition
-function.
-We say the a language $L = \mathcal{L}(G)$ is generated or recognized by the
+An automaton $G$ is a tuple $$G := \left< X,\Sigma,\delta,x_0, X_m \right>,$$
+where $X$ is a set of states, $x_0 \in X$ is an initial state, $X_m \subseteq X$
+is the set of marked states, and $\delta: X \times \Sigma \rightarrow X$ is the
+transition function.
+We say a language $L := \mathcal{L}(G)$ is generated or recognized by the
 automaton $G$. In this paper we assume that for each language there is always a
 correspondent automaton, and vice versa. The marked language $L_m \subseteq L$
-is intended to make a part of the automaton's behaviour distinguishable.
+is intended to make a part of the automaton's behaviour distinguishable in a
+certain context.
 
 Some events of DES can not be observed. To reflect that the set of events
 $\Sigma$ is partitioned into disjointed sets of observable events $\Sigma_o$ and
 not observable events $\Sigma_{ou}$, i.e. $\Sigma = \Sigma_o~\dot{\cup}~
 \Sigma_{ou}$.
 The $M: \Sigma^* \rightarrow \Sigma_o^*$ denotes the natural projection that
-erases unobservable events; $\epsilon$ means the empty string. The
-correspondent inverse projection is $M^{-1}: \Sigma_o \rightarrow 2^\Sigma$. If
-a set of events is partitioned into subsets, $\Sigma = \bigcup_i
+erases unobservable events.
+% ; $\epsilon$ means the empty string. 
+The correspondent inverse projection is $M^{-1}: \Sigma_o^* \rightarrow
+2^{\Sigma^*}$.
+If a set of events is partitioned into subsets, $\Sigma := \bigcup_i
 \Sigma_{i} \mid i \in \mathbb{N}$, the natural projection over the partition
 members is denoted as $M_i: \Sigma_i^* \rightarrow \Sigma_{i,o}^*$.
 
 Let $I := \{1,2,\ldots,n\} \subset  \mathbb{N}$ be an index set. A system is
-defined as a set of automata $\{G_{i \in I}\}$ and a correspondent set
-of languages $\{L_{i \in I}\}$. We use the term \emph{local} in context
-of the members of the sets, and \emph{global} for the entire set.
-For the simplicity of notation we restrict the natural projection, commonly
-defined over Kleene closure on event sets, to the system's languages as
-follows: $P_i(L) := \{s\mid s\in L_{i}\}$ and $P_i^{-1}(L_{i}) := u \mid u
+defined by a set of automata $\{G_{i \in I}\}$ and a correspondent set of
+languages $\{L_{i \in I}\}$. We use the term \emph{local} in context of the
+automata and languages from these sets. The \emph{global} language of the system
+is defined by the parallel composition \cite{cassandras_introduction_2010} of
+its local languages:
+$L := \parallel_{i \in I} L_i$.
+The natural projection is commonly defined over Kleene closure on event sets.
+We restrict it, for simplicity of notation, to the system's languages as
+follows: $P_i(L) := \{s\mid s\in L_{i}\}$, and $P_i^{-1}(L_{i}) := \{s \mid s
 \in L\}, ~i \in I$.
 
 
@@ -293,7 +301,7 @@ criteria aimed, for instance, to decrease computational burden.
 % The objective function discribes a combinatorial optimisation problem, which can
 % be solved by linear programming methods.
 
-\section{Adjacency graph}
+\subsection{Adjacency graph}
 A DES can be seen as a graph where its nodes represent the modules, and edges
 reflect the fact that some modules are synchronized with each other. This
 abstraction is often implicitly or explicitly used in approaches devoted to
@@ -337,24 +345,26 @@ either for the faulty or non-faulty sublanguages. If it is true, then the
 correspondent modules can be composed into a virtual module.
 According to the Lemma \ref{lem:virtual_module_is_diagnosable}, in order to
 decide if the virtual module is diagnosable we need to verify the necessary
-conditions for all the strings $P_i^{-1}(L_{i,f})$ and $P_i^{-1}(L_{i,nf})$.
+conditions for all the strings $P_i^{-1}(L_{i,f})$ and $P_i^{-1}(L_{i,nf})$,
+projected to the local languages of other modules.
 
+[Here should be a motivation for the definition of the co-faulty sublanguage.]
 
- \begin{definition}
+\begin{definition}
 \label{def:co-faulty}
 Given $i, j \in I$, $L_{i,f} \subseteq L_i$,
 we say that a sublanguage $L_{j,cf} \subseteq L_j$ is \emph{co-faulty} with
 respect to $L_{i,f}$ if 
 $$
-	(\forall s \in L_{j,cf})(\forall t \in P_iP_j^{-1}(s))
+	(\forall s \in L_{j,cf})(\forall t \in P_i[P_j^{-1}(s)])
 	\left[
 		t \in L_{i,f} \land t \not \in L_{i,nf}   
-	\right].
+	\right],
 $$ 
 and a sublanguage $L_{j,cnf} \subseteq L_j$ is
 \emph{co-non-faulty} with respect to $L_{i,nf}$ if 
 $$
-	(\forall s \in L_{j,cnf})(\forall t \in P_iP_j^{-1}(s))
+	(\forall s \in L_{j,cnf})(\forall t \in P_i[P_j^{-1}(s)])
 	\left[
 		t \not \in L_{i,f} \land t \in L_{i,nf}   
 	\right].
@@ -372,8 +382,8 @@ to the local language; b) the sublanguage is not co-faulty.
 
 Given global faulty and non-faulty sublanguages, one can compute the local
 co-faulty sublanguage $L_{i,cf}$ as follows. Firstly, apply a corresponded
-projection for the global sublanguages, and then subtract from the results their
-intersection:
+projection for the global sublanguages. Then, subtract from the results
+their intersection:
 \begin{equation}
 \label{eq:co-faulty_from_global}
 	\begin{array}{l}
@@ -557,8 +567,31 @@ may be many paths from $i$ to $j$ in a correspondent adjacency graph]
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \section{Algorithm}
-% \label{sec:Algorithm}
+\section{Algorithm to decide diagnosability}
+\label{sec:Algorithm}
+
+\begin{enumerate}
+  \item Starting from the faulty module, compute co-faulty and co-non-faulty
+  local sublanguages. Make a subgraph $\mathcal{G}_f$ of the adjacency graph
+  $\mathcal{G}$, removing nodes where modules have neither a co-faulty nor a
+  co-non-faulty sublanguage.
+  
+  \item Get a subset of modules where the co-faulty or co-non-faulty
+  sublanguages have observable events. Mark such nodes on the graph
+  $\mathcal{G}_f$.
+  
+  \item If there is a path in the graph from the faulty module to at least one
+  not marked node, then report that the system is not diagnosable (implies that
+  that there is a indeterminate cycle, under assumption that the languages are
+  live), continue otherwise.
+  
+  \item Track observable faulty and non-faulty paths along the nodes of the
+  graph $\mathcal{G}_f$, checking if indistinguishable traces disappear. Each
+  time a trace brakes due to an observable event, mark the node which has this
+  event as a member for the virtual module. If all the paths are broken, then
+  report that the system is diagnosable and return the set of nodes for the
+  virtual module.
+\end{enumerate}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
