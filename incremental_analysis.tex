@@ -77,12 +77,15 @@ Discrete Event Systems, Modular Structure, Distributed Diagnosability
 \section{Introduction}
 
 Figure \ref{fig:curves} shows that the average size of a module grows while the
-system's modules are composed together. A shape of this curve depends mostly on
-the order the modules are taken for the composition, but the initial point, when
-the system has maximal modularity, and the final point, when all the modules are
-composed into one monolithic module, remain the same. Assuming that the system
-is diagnosable, the average size of a diagnoser grows much faster, since it is
-exponential with respect to the average size of a module.
+system's modules are composed together (we imply that each module is represented
+by automata, and the size of a module is reflected by the number of states of
+the correspondent automaton).
+A shape of this curve depends mostly on the order the modules are taken for the
+composition, but the initial point, when the system has maximal modularity, and
+the final point, when all the modules are composed into one monolithic module,
+remain the same. Assuming that the system is diagnosable, the average size of a
+diagnoser grows much faster, since it is exponential with respect to the average
+size of a module.
 The amount of events, the diagnosers have to exchange among each other in order
 to decide if a fault occurred, is decreasing. This reason the diagnosers require
 less event for decision making is due to the fact that they become
@@ -94,8 +97,8 @@ modular diagnosable. The following composition of the modules does not affect
 diagnosability, and leads only to the growth of the modules' and diagnosers'
 sizes. In our approach, given a system with an initial modularity, we search for
 a such point, when the system is modular diagnosable. If the system is
-diagnosable, then this point can be always found. The modules correspondent
-to that modularity we call virtual, since they are not composed in reality, and
+diagnosable, then this point can always be found. The modules correspondent to
+that modularity we call virtual, since they are not composed in reality, and
 used only to build diagnosers.
 
 \begin{figure}
