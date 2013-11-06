@@ -76,6 +76,28 @@ Discrete Event Systems, Modular Structure, Distributed Diagnosability
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
+Figure \ref{fig:curves} shows that the average size of a module grows while the
+system's modules are composed together. A shape of this curve depends mostly on
+the order the modules are taken for the composition, but the initial point, when
+the system has maximal modularity, and the final point, when all the modules are
+composed into one monolithic module, remain the same. Assuming that the system
+is diagnosable, the average size of a diagnoser grows much faster, since it is
+exponential with respect to the average size of a module.
+The amount of events, the diagnosers have to exchange among each other in order
+to decide if a fault occurred, is decreasing. This reason the diagnosers require
+less event for decision making is due to the fact that they become
+self-sufficient, since the amount of observable events available for each
+diagnoser without communications is growing. Thus, the events exchange rate
+decreases down to the point where no communications is required to make a
+decision about the faults occurrence. That is the point when the system becomes
+modular diagnosable. The following composition of the modules does not affect
+diagnosability, and leads only to the growth of the modules' and diagnosers'
+sizes. In our approach, given a system with an initial modularity, we search for
+a such point, when the system is modular diagnosable. If the system is
+diagnosable, then this point can be always found. The modules correspondent
+to that modularity we call virtual, since they are not composed in reality, and
+used only to build diagnosers.
+
 \begin{figure}
 \begin{tikzpicture}
 % \draw[help lines] (0,0) grid (5,3);
@@ -85,7 +107,7 @@ Discrete Event Systems, Modular Structure, Distributed Diagnosability
 	(0,0) node[below]{0} -- 
 	(6,0) node[below]{1} -- 
 	(6,3) node[right]{States};
-\node [below] at (2.5,0) {1/Number of modules};
+\node [below] at (3,0) {1/Number of modules};
 % Curve of the average size of modules
 \draw[blue, thick] (0.1,.1) to [out=0,in=-170] (6,2.5); 
 % Curve of the average size of diagnosers
@@ -100,19 +122,18 @@ Discrete Event Systems, Modular Structure, Distributed Diagnosability
 \node[align=left, below right] at (3.5,1.5) {Virtual\\ modules}; 
 \draw [fill, red] (3.5,2.55) circle [radius=0.05];
 % Legend
-\draw[blue, thick] (0,-1) -- (1,-1);
-\node[right] at (1,-1) {Average size of module (states)};
-\draw[red, thick, dashed] (0,-1.5) -- (1,-1.5);
-\node[right] at (1,-1.5) {Average size of diagnoser (states)};
-\draw[orange, thick, dotted] (0,-2) -- (1,-2);
-\node[right] at (1,-2) {Amount of communications (events)};
-
+\draw[blue, thick] (0,-1) -- (1,-1)
+	node[black, right] {Average size of module, states};
+\draw[red, thick, dashed] (0,-1.4) -- (1,-1.4)
+	node[black, right] {Average size of diagnoser, states};
+\draw[orange, thick, dotted] (0,-1.8) -- (1,-1.8) 
+	node[black, right] {Events exchange rate};
 
 
 \end{tikzpicture}
-\caption{Do not forget!
-Make it explicit enough that readers
-can figure out what you are doing.}
+\caption{Changing of size of modules, diagnosers, and events exchange rate
+with respect to the number of modules in the same system}
+\label{fig:curves}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
