@@ -132,6 +132,43 @@ follows: $P_i(L) := \{s\mid s\in L_{i}\}$, and $P_i^{-1}(L_{i}) := \{s \mid s
 \in L\}, ~i \in I$.
 
 
+\subsection{Adjacency graph}
+A DES can be seen as a graph where its nodes represent the modules, and edges
+reflect the fact that some modules are synchronized with each other. This
+abstraction is often implicitly or explicitly used in approaches devoted to
+diagnosability of modular systems. In our approach we denote such graph as the
+\emph{adjacency graph}, formally defined as follows:
+\begin{definition}
+\label{def:graph_events}
+Given $\{\Sigma_i \mid i \in I \}$, let $\mathcal{G} = \left<I, E\right>$ be an
+undirected adjacency graph where $E \subseteq I \times
+I$ such that 
+$$(\forall i, j \in I)(i, j) \in E \Leftrightarrow 
+	\Sigma_i \cap \Sigma_j \neq \emptyset \mid i \neq j.$$
+\end{definition}
+We extend this definition over languages.
+\begin{definition}
+\label{def:graph_languages}
+The adjacency graph over a set of languages $\{L_i \subseteq \Sigma_i^* \mid i
+\in I \}$ is a graph $\mathcal{G} = \left<I, E\right>$ where $E \subseteq I \times
+I$ such that 
+$$(\forall i, j \in I)(i, j) \in E \Leftrightarrow
+	P_{i,j}^{-1}(L_i) \cap P_{i,j}^{-1}(L_j) \neq \emptyset \mid i \neq j, 
+$$
+where 
+$P_{i,j} : (\Sigma_i \cup \Sigma_j)^* \rightarrow (\Sigma_i \cap \Sigma_j)^*$
+, and  
+$P_{i,j}^{-1}(s) := \{t \in (\Sigma_i \cup \Sigma_j)^* \mid P_{i,j}(t) = s\}$.
+\end{definition}
+
+By definition, the adjacency graph over $\{\Sigma_i\}$ is a supergraph for any
+graph over $\{L_i \subseteq \Sigma_i\}$, and any adjacency graph over $\{L'_i
+\subseteq L_i\}$ is a subgraph of the adjacency graph over $\{L_i\}$.
+
+% Recall that in graph theory a simple path is a path in a graph which does not
+% have repeating vertices.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{General form of the approach}
 \label{sec:General}
@@ -301,42 +338,6 @@ criteria aimed, for instance, to decrease computational burden.
 % The objective function discribes a combinatorial optimisation problem, which can
 % be solved by linear programming methods.
 
-\subsection{Adjacency graph}
-A DES can be seen as a graph where its nodes represent the modules, and edges
-reflect the fact that some modules are synchronized with each other. This
-abstraction is often implicitly or explicitly used in approaches devoted to
-diagnosability of modular systems. In our approach we denote such graph as the
-\emph{adjacency graph}, formally defined as follows:
-\begin{definition}
-\label{def:graph_events}
-Given $\{\Sigma_i \mid i \in I \}$, let $\mathcal{G} = \left<I, E\right>$ be an
-undirected adjacency graph where $E \subseteq I \times
-I$ such that 
-$$(\forall i, j \in I)(i, j) \in E \Leftrightarrow 
-	\Sigma_i \cap \Sigma_j \neq \emptyset \mid i \neq j.$$
-\end{definition}
-We extend this definition over languages.
-\begin{definition}
-\label{def:graph_languages}
-The adjacency graph over a set of languages $\{L_i \subseteq \Sigma_i^* \mid i
-\in I \}$ is a graph $\mathcal{G} = \left<I, E\right>$ where $E \subseteq I \times
-I$ such that 
-$$(\forall i, j \in I)(i, j) \in E \Leftrightarrow
-	P_{i,j}^{-1}(L_i) \cap P_{i,j}^{-1}(L_j) \neq \emptyset \mid i \neq j, 
-$$
-where 
-$P_{i,j} : (\Sigma_i \cup \Sigma_j)^* \rightarrow (\Sigma_i \cap \Sigma_j)^*$
-, and  
-$P_{i,j}^{-1}(s) := \{t \in (\Sigma_i \cup \Sigma_j)^* \mid P_{i,j}(t) = s\}$.
-\end{definition}
-
-By definition, the adjacency graph over $\{\Sigma_i\}$ is a supergraph for any
-graph over $\{L_i \subseteq \Sigma_i\}$, and any adjacency graph over $\{L'_i
-\subseteq L_i\}$ is a subgraph of the adjacency graph over $\{L_i\}$.
-
-% Recall that in graph theory a simple path is a path in a graph which does not
-% have repeating vertices.
- 
 \section{Co-faulty language}
 
 Assume that given a language with faulty behaviour and a language which has an
