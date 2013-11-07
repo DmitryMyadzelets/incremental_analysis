@@ -30,7 +30,7 @@ Systems}, pdfauthor={Dmitry Myadzelets}, bookmarks=false,
 \begin{document}
 
 \title{Virtual Modules in Discrete-Event Systems: \\
-Achieving Modular Diagnosability. Generalized approach} 
+Achieving Modular Diagnosability} 
 \author{
 	Dmitry Myadzelets$^{*,1,2}$
 	, Andrea Paoli$^{1,3}$
@@ -75,6 +75,11 @@ Discrete Event Systems, Modular Structure, Distributed Diagnosability
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
+
+[Problem and literature]
+
+[Summary of the ECC paper (Simplified, with 2 modules). Here we relaxing
+assumptions\ldots]
 
 Figure \ref{fig:curves} shows that the average size of a module grows while the
 system's modules are composed together (we imply that each module is represented
@@ -121,8 +126,8 @@ used only to build diagnosers.
 \draw[dashed] (3.5,0) -- (3.5,3);
 % Point of virtual modularity  
 \draw [fill] (3.5,0) circle [radius=0.05];
-\draw [fill, blue] (3.5,1.42) circle[radius=0.05]; 
-\node[align=left, below right] at (3.5,1.5) {Virtual\\ modules}; 
+\draw [fill, blue] (3.5,1.42) circle[radius=0.05] 
+	node[align=left, black, below right] {Virtual\\ modules}; 
 \draw [fill, red] (3.5,2.55) circle [radius=0.05];
 % Legend
 \draw[blue, thick] (0,-1) -- (1,-1)
@@ -132,12 +137,14 @@ used only to build diagnosers.
 \draw[orange, thick, dotted] (0,-1.8) -- (1,-1.8) 
 	node[black, right] {Events exchange rate};
 
-
 \end{tikzpicture}
 \caption{Changing of size of modules, diagnosers, and events exchange rate
 with respect to the number of modules in the same system}
 \label{fig:curves}
 \end{figure}
+
+[What is the new contribution]
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preliminaries}
@@ -234,6 +241,10 @@ graph over $\{L_i \subseteq \Sigma_i\}$, and any adjacency graph over $\{L'_i
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{General form of the approach}
 \label{sec:General}
+
+[Formal problem definition]
+[Figure of modular and decentralized diagnosability (from the presentation)]
+
 In the first article we introduced an analysis of a trivial system of two
 languages, with conditions for the both languages, when one language makes the
 system diagnosable if the other language is not locally diagnosable.
@@ -444,24 +455,45 @@ a) it is the sublanguage of projection of the global non-faulty language
 to the local language; b) the sublanguage is not co-faulty.
 
 Given global faulty and non-faulty sublanguages, one can compute the local
-co-faulty sublanguage $L_{i,cf}$ as follows. Firstly, apply a corresponded
+co-faulty sublanguage $L_{i=j,cf}$ as follows. First, apply a corresponded
 projection for the global sublanguages. Then, subtract from the results
 their intersection:
 \begin{equation}
 \label{eq:co-faulty_from_global}
 	\begin{array}{l}
-		L_{i,cf} := P_i(L_f) \backslash P_i(L_{nf}),\\ 
-		L_{i,cnf} := P_i(L_{nf}) \backslash P_i(L_{f}).	
+		L_{j,cf} := P_j(L_f) \backslash P_j(L_{nf}),\\ 
+		L_{j,cnf} := P_j(L_{nf}) \backslash P_j(L_{f}).	
 	\end{array}
 \end{equation}
 However, we are interested to compute a local co-faulty
-language without computing the global language. Below we present the algorithm
-which, given a module with the co-faulty language defined, computes the
-co-faulty languages of an adjacent module.
+language without computing the global language. Since the global
+faulty sublanguage is define as 
+\begin{equation}
+\label{eq:co-faulty_from_locals}
+	L_f := P_i^{-1}(L_{i,f}) \cap \bigcap_{k\neq
+	i}^I P_k^{-1}(L_k),
+\end{equation}
+then, by substituting the global language in \ref{eq:co-faulty_from_global} 
+by \ref{eq:co-faulty_from_locals}, and applying properties of natural
+projection, the co-faulty sublanguage of the module can be computed as follows:
+\begin{equation}
+	\begin{array}{ll}
+		L_{j,cf} := 
+		&
+		\bigcap_k^I P_j[P_k^{-1}(L_k) \cap P_i^{-1}(L_{i,f})] 
+		\backslash \\
+		&
+		\bigcap_k^I P_j[P_k^{-1}(L_k) \cap P_i^{-1}(L_{i,nf})],
+		\\ & \textrm{where } i\neq j\neq k \in I.
+	\end{array}
+\end{equation}
+
+
+Below we present the algorithm which, given a module with the co-faulty
+sublanguage defined, computes the co-faulty languages of an adjacent module.
 
 % In the following, when we assume that statements for co-faulty sublanguages also
 % valid for co-non-faulty sublanguages.
-
 
 
 % By definition, any faulty sublanguage is co-faulty with respect to itself.
@@ -536,8 +568,9 @@ $F$ and $N$ is computed. Then, at the steps \ref{alg:pcf_get_f} and
 \ref{alg:pcf_get_n} we update languages subtracting their common prefix.
 Finally, we compute co-faulty and co-non-faulty languages for the adjacent
 module. In this sequence of operations at the steps
-\ref{alg:pcf_get_common_f}--\ref{alg:pcf_get_cnf} new automata for
-the correspondent languages are constructed or modified.
+\ref{alg:pcf_get_common_f}--\ref{alg:pcf_get_cnf} new automata for the
+correspondent languages are constructed or modified, and all the operations can
+be performed using standard software libraries.
 
 Note, that the the Algorithm \ref{alg:partial_co_faulty} returns the co-faulty
 sublanguage of the module $j$ which is co-faulty with respect to the module $i$.
@@ -658,8 +691,13 @@ may be many paths from $i$ to $j$ in a correspondent adjacency graph]
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion}
-\label{sec:Conclusion}
+\section{Example}
+\label{sec:Example}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions}
+\label{sec:Conclusions}
 
 
 \bibliographystyle{IEEEtran}
