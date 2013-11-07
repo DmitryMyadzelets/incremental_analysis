@@ -29,12 +29,12 @@ Systems}, pdfauthor={Dmitry Myadzelets}, bookmarks=false,
 
 \begin{document}
 
-\title{How to Make a Discrete-Event System \\ Modularly Diagnosable.
-Algorithm} 
+\title{Virtual Modules in Discrete-Event Systems: \\
+Achieving Modular Diagnosability. Generalized approach} 
 \author{
-% 	Dmitry Myadzelets$^{*,1,2}$
-% 	, Andrea Paoli$^{1,3}$
-	\\ \today
+	Dmitry Myadzelets$^{*,1,2}$
+	, Andrea Paoli$^{1,3}$
+	-- \today
 	\thanks{$^{1}$Center for Research on Complex Automated Systems (CASY), DEI,
 	University of Bologna, Viale Pepoli 3/2, 40123, Bologna, Italy}
 		\thanks{$^{2}$E-mail: {dmitry.myadzelets@gmail.com}}
@@ -85,7 +85,7 @@ composition, but the initial point, when the system has maximal modularity, and
 the final point, when all the modules are composed into one monolithic module,
 remain the same. Assuming that the system is diagnosable, the average size of a
 diagnoser grows much faster, since it is exponential with respect to the average
-size of a module.
+size of a module, in the worst case.
 The amount of events, the diagnosers have to exchange among each other in order
 to decide if a fault occurred, is decreasing. This reason the diagnosers require
 less event for decision making is due to the fact that they become
