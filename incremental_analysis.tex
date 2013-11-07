@@ -488,6 +488,19 @@ projection, the co-faulty sublanguage of the module can be computed as follows:
 	\end{array}
 \end{equation}
 
+[In the above equation we should compose co-faulty languages! As below:]
+\begin{equation}
+	\begin{array}{ll}
+		L_{j,cf} := 
+		&
+		\bigcap_k^I P_j[P_k^{-1}(L_k) \cap P_i^{-1}(L_{i,cf})] 
+		\backslash \\
+		&
+		\bigcap_k^I P_j[P_k^{-1}(L_k) \cap P_i^{-1}(L_{i,cnf})],
+		\\ & \textrm{where } i\neq j\neq k \in I.
+	\end{array}
+\end{equation}
+
 
 Below we present the algorithm which, given a module with the co-faulty
 sublanguage defined, computes the co-faulty languages of an adjacent module.
