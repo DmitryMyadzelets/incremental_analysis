@@ -27,6 +27,7 @@ Systems}, pdfauthor={Dmitry Myadzelets}, bookmarks=false,
 \usepackage{algpseudocode}
 
 
+
 \begin{document}
 
 \title{Virtual Modules in Discrete-Event Systems: \\
@@ -515,7 +516,7 @@ itself. This fact allows us to simplify equation
 \ref{eq:co-faulty_iterative_w_faulty}, and rewrite is as follows:
 
 \begin{equation}
-\label{eq:co-faulty_iterative_w_cf}
+\label{}
 	\begin{array}{l}
 		L_{j,cf} := 
 		\\
@@ -614,10 +615,11 @@ correspondent languages are constructed or modified, and all the operations can
 be performed using standard software libraries.
 
 Note, that the the Algorithm \ref{alg:partial_co_faulty} returns the co-faulty
-sublanguage of the module $j$ which is co-faulty with respect to the module $i$.
-However, this sublanguage, in general, is not equal to the one computed from the
-global faulty sublanguage, as in \ref{eq:co-faulty_from_global}. [since there
-may be many paths from $i$ to $j$ in a correspondent adjacency graph]
+sublanguage of the module $j$ which is co-faulty with respect to only the module
+$i$, i.e. it is computed only partially. According to
+(\ref{eq:co-faulty_iterative_w_faulty}), in order to compute the full co-faulty
+sublanguage, we need to iterate over all the co-faulty sublanguages.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -701,7 +703,33 @@ may be many paths from $i$ to $j$ in a correspondent adjacency graph]
 % % are processed separately first, and then the goal module is processed with all
 % % of them. << Too BIG complexity difference. Check it twice!
 
-
+\begin{algorithm} Computing all co-faulty and co-non-faulty languages of
+all the modules.
+\label{alg:full_co_faulty}
+\begin{algorithmic}[1]
+	\Require A faulty module $i\in I$, $\{L_j\mid j \in I\}$
+	\State $stack \leftarrow i$
+	\While{$stack \neq \emptyset$}
+		\State $i \leftarrow stack$
+		\ForAll{$j \in I \mid j \textrm{ is adjacent to } i$}
+			\State $\Sigma_c \leftarrow \Sigma_i \cap \Sigma_j$ 
+			\State $F_i \leftarrow P_{\Sigma_i \rightarrow \Sigma_c}(L_{i,cf})$
+			\State $F_j \leftarrow P_{\Sigma_j \rightarrow \Sigma_c}(L_{j,cf})$
+			\State $N_j \leftarrow P_{\Sigma_j \rightarrow \Sigma_c}(L_{j,cnf})$
+			\State $K \leftarrow F \cap N$
+			\If{$F_i \cap \overline{F_j}\backslash K_j \neq \emptyset$}
+				\State update $F_i$
+				\State $stack \leftarrow j$ 
+			\EndIf
+		\EndFor
+	\EndWhile
+	\ForAll{$j \in I$}
+		\State $L_{j,cf}:=(P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(F_j)) \cap L_j$
+	\EndFor
+	\\
+	\Return $\{L_{j,cf}, L_{j,cnf}\}$
+\end{algorithmic}
+\end{algorithm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Algorithm to decide diagnosability}
