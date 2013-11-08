@@ -454,10 +454,18 @@ conditions:
 a) it is the sublanguage of projection of the global non-faulty language
 to the local language; b) the sublanguage is not co-faulty.
 
+\begin{lemma}
+\label{lem:empty_co_if_no_common}  
+Given a language $L_j\mid j \in I$, its co-faulty and
+co-non-faulty sublanguages are empty, if the language has no common events in
+its strings, i.e
+$$P_{\Sigma_j \rightarrow \bigcap_{i\neq j}^I \Sigma_i}(L_i) = \emptyset.$$
+\end{lemma}
+
+We skip the proof due to its triviality. 
+
 Given global faulty and non-faulty sublanguages, one can compute the local
-co-faulty sublanguage $L_{i=j,cf}$ as follows. First, apply a corresponded
-projection for the global sublanguages. Then, subtract from the results
-their intersection:
+co-faulty sublanguage as follows:
 \begin{equation}
 \label{eq:co-faulty_from_global}
 	\begin{array}{l}
@@ -467,42 +475,62 @@ their intersection:
 \end{equation}
 However, we are interested to compute a local co-faulty
 language without computing the global language. Since the global
-faulty sublanguage is define as 
+faulty sublanguage is define as
 \begin{equation}
 \label{eq:co-faulty_from_locals}
 	L_f := P_i^{-1}(L_{i,f}) \cap \bigcap_{k\neq
 	i}^I P_k^{-1}(L_k),
 \end{equation}
-then, by substituting the global language in \ref{eq:co-faulty_from_global} 
-by \ref{eq:co-faulty_from_locals}, and applying properties of natural
-projection, the co-faulty sublanguage of the module can be computed as follows:
+then, by substituting the global language in \ref{eq:co-faulty_from_global} by
+\ref{eq:co-faulty_from_locals}, and by mathematical induction, the co-faulty
+sublanguage of an arbitrary module can be computed as follows:
+% \begin{equation}
+% 	\begin{array}{ll}
+% 		L_{j,cf} := 
+% 		&
+% 		\bigcap_k^I P_j[P_k^{-1}(L_{k,cf}) \cap P_i^{-1}(L_{i,f})] 
+% 		\backslash \\
+% 		&
+% 		\bigcap_k^I P_j[P_k^{-1}(L_{k,cnf}) \cap P_i^{-1}(L_{i,nf})],
+% 		\\ & \textrm{where } i\neq j\neq k \in I.
+% 	\end{array}
+% \end{equation}
 \begin{equation}
-	\begin{array}{ll}
+\label{eq:co-faulty_iterative_w_faulty}
+	\begin{array}{l}
 		L_{j,cf} := 
-		&
-		\bigcap_k^I P_j[P_k^{-1}(L_k) \cap P_i^{-1}(L_{i,f})] 
-		\backslash \\
-		&
-		\bigcap_k^I P_j[P_k^{-1}(L_k) \cap P_i^{-1}(L_{i,nf})],
-		\\ & \textrm{where } i\neq j\neq k \in I.
+		\\
+		P_j\Big(P_j^{-1}(L_j) \cap P_i^{-1}(L_{i,f})\cap 
+		\bigcap_k^I P_k^{-1}(L_{k,cf})\Big) \backslash 
+		\\
+		P_j\Big(P_j^{-1}(L_j) \cap P_i^{-1}(L_{i,nf})\cap 
+		\bigcap_k^I P_k^{-1}(L_{k,cnf})\Big),
+		\\ 
+		\textrm{where } i\neq j\neq k \in I.
 	\end{array}
 \end{equation}
 
-[In the above equation we should compose co-faulty languages! As below:]
+According to Definition \ref{def:co-faulty}, any faulty language is co-faulty to
+itself. This fact allows us to simplify equation
+\ref{eq:co-faulty_iterative_w_faulty}, and rewrite is as follows:
+
 \begin{equation}
-	\begin{array}{ll}
+\label{eq:co-faulty_iterative_w_cf}
+	\begin{array}{l}
 		L_{j,cf} := 
-		&
-		\bigcap_k^I P_j[P_k^{-1}(L_k) \cap P_i^{-1}(L_{i,cf})] 
-		\backslash \\
-		&
-		\bigcap_k^I P_j[P_k^{-1}(L_k) \cap P_i^{-1}(L_{i,cnf})],
-		\\ & \textrm{where } i\neq j\neq k \in I.
+		\\
+		P_j\Big(P_j^{-1}(L_j) \cap 
+		\bigcap_i^I P_i^{-1}(L_{i,cf})\Big) \backslash 
+		\\
+		P_j\Big(P_j^{-1}(L_j) \cap 
+		\bigcap_i^I P_i^{-1}(L_{i,cnf})\Big),
+		\\ 
+		\textrm{where } i\neq j\in I.
 	\end{array}
 \end{equation}
 
 
-Below we present the algorithm which, given a module with the co-faulty
+Below we present an algorithm which, given a module with the co-faulty
 sublanguage defined, computes the co-faulty languages of an adjacent module.
 
 % In the following, when we assume that statements for co-faulty sublanguages also
