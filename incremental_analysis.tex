@@ -532,7 +532,8 @@ itself. This fact allows us to simplify equation
 
 
 Below we present an algorithm which, given a module with the co-faulty
-sublanguage defined, computes the co-faulty languages of an adjacent module.
+sublanguage defined, computes the co-faulty and and co-non-faulty languages of
+an adjacent module.
 
 % In the following, when we assume that statements for co-faulty sublanguages also
 % valid for co-non-faulty sublanguages.
@@ -589,10 +590,10 @@ adjacent module.
 	\State $N \leftarrow N\backslash K$
 		\label{alg:pcf_get_n}
 	\State $L_{j,cf} \leftarrow 
-		(P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(F)) \cap L_j$
+		L_j \cap P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(F)$
 		\label{alg:pcf_get_cf}
 	\State $L_{j,cnf} \leftarrow 
-		(P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(N)) \cap L_j$
+		L_j \cap P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(N)$
 		\label{alg:pcf_get_cnf}
 	\\
 	\Return $L_{j,cf}, L_{j,cnf}$
@@ -707,24 +708,38 @@ sublanguage, we need to iterate over all the co-faulty sublanguages.
 all the modules.
 \label{alg:full_co_faulty}
 \begin{algorithmic}[1]
-	\Require A faulty module $i\in I$, $\{L_j\mid j \in I\}$
-	\State $stack \leftarrow i$
-	\While{$stack \neq \emptyset$}
-		\State $i \leftarrow stack$
+	\Require A set of the system's languages $\{L_j\mid j \in I\}$, faulty and
+	non-faulty languages $L_{i,f}$, $L_{i,nf}$ of the faulty module $i\in I$.
+	\ForAll{$j \in I$}
+		\State $C_j \leftarrow 
+			P_{\Sigma_j \rightarrow \bigcap_{i\neq j}^I \Sigma_i}(L_j)$
+		\State $F_j \leftarrow \emptyset, N_j \leftarrow \emptyset$
+	\EndFor
+	\Procedure{co-languages}{$i$, $F_i$, $N_i$}
 		\ForAll{$j \in I \mid j \textrm{ is adjacent to } i$}
-			\State $\Sigma_c \leftarrow \Sigma_i \cap \Sigma_j$ 
-			\State $F_i \leftarrow P_{\Sigma_i \rightarrow \Sigma_c}(L_{i,cf})$
-			\State $F_j \leftarrow P_{\Sigma_j \rightarrow \Sigma_c}(L_{j,cf})$
-			\State $N_j \leftarrow P_{\Sigma_j \rightarrow \Sigma_c}(L_{j,cnf})$
-			\State $K \leftarrow F \cap N$
-			\If{$F_i \cap \overline{F_j}\backslash K_j \neq \emptyset$}
-				\State update $F_i$
-				\State $stack \leftarrow j$ 
+			\State $F'_j \leftarrow (C_j^{-1} \cap F_i^{-1})\cap C_j$
+			\State $N'_j \leftarrow (C_j^{-1} \cap N_i^{-1})\cap C_j$
+			\State $K \leftarrow F'_j \cap N'_j$
+			\State $F'_j \leftarrow F'_j \backslash K$
+			\State $N'_j \leftarrow N'_j \backslash K$
+			\If{$F'_j \backslash F_j \neq \emptyset \lor 
+				 N'_j \backslash N_j \neq \emptyset$}
+				\State $F_j \leftarrow F_j \cup F'_j$
+				\State $N_j \leftarrow N_j \cup N'_j$
+				\State \textproc{co-languages}$(j, F_j, N_j)$
 			\EndIf
 		\EndFor
-	\EndWhile
+	\EndProcedure
+	
+	\State $F_i \leftarrow 
+		P_{\Sigma_i \rightarrow \bigcap_{j\neq i}^I \Sigma_j}(L_{i,f})$
+	\State $N_i \leftarrow 
+		P_{\Sigma_i \rightarrow \bigcap_{j\neq i}^I \Sigma_j}(L_{i,nf})$
+	\State \textproc{co-languages}($i$, $F_i$, $N_i$)
+	
 	\ForAll{$j \in I$}
-		\State $L_{j,cf}:=(P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(F_j)) \cap L_j$
+		\State $L_{j,cf}:= L_j \cap P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(F_j)$
+		\State $L_{j,cnf}:= L_j \cap P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(N_j)$
 	\EndFor
 	\\
 	\Return $\{L_{j,cf}, L_{j,cnf}\}$
