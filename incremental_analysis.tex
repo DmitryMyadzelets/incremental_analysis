@@ -616,10 +616,11 @@ correspondent languages are constructed or modified, and all the operations can
 be performed using standard software libraries.
 
 Note, that the the Algorithm \ref{alg:partial_co_faulty} returns the co-faulty
-sublanguage of the module $j$ which is co-faulty with respect to only the module
-$i$, i.e. it is computed only partially. According to
+sublanguage of the module $j$, and this sublanguage is co-faulty with
+respect to only the module $i$, i.e. it is computed only partially. According to
 (\ref{eq:co-faulty_iterative_w_faulty}), in order to compute the full co-faulty
-sublanguage, we need to iterate over all the co-faulty sublanguages.
+sublanguage, we need to iterate over all the co-faulty sublanguages, as
+presented in the following algorithm. 
 
 
 
@@ -762,7 +763,7 @@ all the modules.
   
   \item If there is a path in the graph from the faulty module to at least one
   not marked node, then report that the system is not diagnosable (implies that
-  that there is a indeterminate cycle, under assumption that the languages are
+  there is a indeterminate cycle, under assumption that the languages are
   live), continue otherwise.
   
   \item Track observable faulty and non-faulty paths along the nodes of the
