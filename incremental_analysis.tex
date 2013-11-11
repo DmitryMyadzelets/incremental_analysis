@@ -23,10 +23,8 @@ Systems}, pdfauthor={Dmitry Myadzelets}, bookmarks=false,
 \usepackage{tikz}
 \usetikzlibrary{decorations.pathreplacing}
 \usetikzlibrary{arrows,positioning,automata,shadows,fit,shapes}
-
 \usepackage{algpseudocode}
-
-
+\usepackage{vaucanson-g} %Automata
 
 \begin{document}
 
@@ -718,10 +716,11 @@ all the modules.
 	\EndFor
 	\Procedure{co-languages}{$i$, $F_i$, $N_i$}
 		\ForAll{$j \in I \mid j \textrm{ is adjacent to } i$}
-			\State $F'_j \leftarrow (C_j^{-1} \cap F_i^{-1})\cap C_j$
-			\State $N'_j \leftarrow (C_j^{-1} \cap N_i^{-1})\cap C_j$
-			\State $K \leftarrow F'_j \cap N'_j$
-			\State $F'_j \leftarrow F'_j \backslash K$
+			\State $F'_j \leftarrow (
+			P_{\Sigma_j \rightarrow \Sigma_j \cap \Sigma_i}^{-1}(C_j) 
+			\cap F_i^{-1})\cap C_j$
+			\State $N'_j \leftarrow (C_j^{-1} \cap N_i^{-1})\cap
+			C_j$ \State $K \leftarrow F'_j \cap N'_j$ \State $F'_j \leftarrow F'_j \backslash K$
 			\State $N'_j \leftarrow N'_j \backslash K$
 			\If{$F'_j \backslash F_j \neq \emptyset \lor 
 				 N'_j \backslash N_j \neq \emptyset$}
@@ -743,13 +742,39 @@ all the modules.
 		\State $L_{j,cnf}:= L_j \cap P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(N_j)$
 	\EndFor
 	\\
-	\Return $\{L_{j,cf}, L_{j,cnf}\}$
+	\Return $\{L_{j,cf}\}$, $\{L_{j,cnf}\}$
 \end{algorithmic}
 \end{algorithm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Algorithm to decide diagnosability}
 \label{sec:Algorithm}
+
+\begin{algorithm} Deciding diagnosability, and making a virtual module.
+\label{alg:diagnosability}
+\begin{algorithmic}[1]
+	\Require An index  $i$ of the faulty module, and the sets of co-faulty and
+	co-non-faulty languages $\{L_{j,cf}\}$, $\{L_{j,cnf}\}$, $i,j\in I$.
+	\State $V \leftarrow \{i\}$ \Comment{Virtual module}
+	\ForAll{$j\in I \mid j\neq i$}
+		\State $F_{j} \leftarrow M(L_{j,cf}\backslash \overline{L_{j,cf}})$
+		\State $N_{j} \leftarrow M(L_{j,cnf}\backslash \overline{L_{j,cnf}})$
+		\If{$F_{j} = \emptyset$}
+			\If{$N_{j} = \emptyset \lor L_{j,cf} \textrm{ has a cycle}$}
+			\State report that the system is not diagnosable 
+			\EndIf
+		\EndIf
+	\EndFor
+	\ForAll{$j, k \in I \mid j, k\neq i$}
+		\State If $M_{j,k}^{-1}(F) \cap M_{k,j}^{-1}(N)$ has an indeterminate cycle then
+		report that the system is not diagnosable, continue otherwise.
+		\State \ldots
+	\EndFor
+	\\
+	\Return $V$
+\end{algorithmic}
+\end{algorithm}
+
 
 \begin{enumerate}
   \item Starting from the faulty module, compute co-faulty and co-non-faulty
@@ -758,26 +783,239 @@ all the modules.
   co-non-faulty sublanguage.
   
   \item Get a subset of modules where the co-faulty or co-non-faulty
-  sublanguages have observable events. Mark such nodes on the graph
-  $\mathcal{G}_f$.
+  sublanguages, excluding their prefixes, have observable events. Mark such
+  nodes on the graph $\mathcal{G}_f$.
   
   \item If there is a path in the graph from the faulty module to at least one
   not marked node, then report that the system is not diagnosable (implies that
-  there is a indeterminate cycle, under assumption that the languages are
+  there is an indeterminate cycle, under assumption that the languages are
   live), continue otherwise.
   
-  \item Track observable faulty and non-faulty paths along the nodes of the
-  graph $\mathcal{G}_f$, checking if indistinguishable traces disappear. Each
-  time a trace brakes due to an observable event, mark the node which has this
-  event as a member for the virtual module. If all the paths are broken, then
-  report that the system is diagnosable and return the set of nodes for the
-  virtual module.
+  \item Make pairwise composition of all the co-faulty and co-non-faulty
+  languages with respect to observable events. If the language of at least one
+  composition is not diagnosable, then the system is not diagnosable.
+  Otherwise, each time a trace brakes due to an observable event, mark the node
+  which has this event as a member for the virtual module. If all the paths are
+  broken, then report that the system is diagnosable and return the set of nodes
+  for the virtual module.
 \end{enumerate}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Example}
 \label{sec:Example}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[->,>=stealth, node distance=2.5cm, auto, shorten >=1pt,
+semithick, initial text=,	
+	every node/.style={scale=0.7},
+    every state/.style={fill=green,text=black},
+    accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
+    ]
+% \draw[help lines] (0,-2) grid (6,2);
+\node[initial,state] (0)                    {$0$};
+\node[state, accepting]         (1) [above right of=0] {$1$};
+\node[state, accepting]         (2) [right of=1]       {$2$};
+\node[state, accepting]         (3) [right of=2]       {$3$};
+\node[state, accepting]         (4) [right of=3]       {$4$};
+\node[state, accepting]         (5) [right of=0] 		{$5$};
+
+\path
+(0)	edge [] 		 node {$f$} (1)
+(1)	edge [] 		 node {$a$} (2)
+(2)	edge [] 		 node {$o_1$} (3)
+(3)	edge [] 		 node {$b$} (4)
+(4)	edge [loop right] node {$c$} (4)
+(0)	edge [] 		 node {$o_1$} (5)
+(5)	edge [loop right] node {$c$} (5)
+;
+\end{tikzpicture}
+\caption{Automaton, marking language $L_1$. $\Sigma_o = \{o_1\}$, $\Sigma_f =
+\{f\}$}
+\label{fig:G1}
+\end{figure}
+
+
+% Fautly and non-faulty
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[->,>=stealth, node distance=2.5cm, auto, shorten >=1pt,
+semithick, initial text=,	
+	every node/.style={scale=0.7},
+    every state/.style={fill=green,text=black},
+    accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
+    ]
+% \draw[help lines] (0,-2) grid (6,2);
+\node[initial,state] (0)                    {$0$};
+\node[state, accepting, fill=orange]         (1) [right of=0] 		{$1$};
+\node[state, accepting, fill=orange]         (2) [right of=1]       {$2$};
+\node[state, accepting, fill=orange]         (3) [right of=2]       {$3$};
+\node[state, accepting, fill=orange]         (4) [right of=3]       {$4$};
+
+\node[initial,state] (0') [below of=0]                   {$0$};
+\node[state, accepting]         (5) [right of=0'] 		{$5$};
+
+\path
+(0)	edge [] 		 node {$f$} (1)
+(1)	edge [] 		 node {$a$} (2)
+(2)	edge [] 		 node {$o_1$} (3)
+(3)	edge [] 		 node {$b$} (4)
+(4)	edge [loop below] node {$c$} (4)
+;
+\path
+(0') edge [] 		 node {$o_1$} (5)
+(5)	edge [loop right] node {$c$} (5)
+;
+\end{tikzpicture}
+\caption{Automata, marking the faulty and non-faulty sublanguages of $L_1$}
+\label{fig:G1_faulty}
+\end{figure}
+
+
+
+% G2-G3-G4
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[->,>=stealth, node distance=2.5cm, auto, shorten >=1pt,
+semithick, initial text=,	
+	every node/.style={scale=0.7},
+    every state/.style={fill=green,text=black},
+    accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
+    ]
+% \draw[help lines] (0,-2) grid (6,2);
+% G1
+\node[initial,state, accepting] (0)                    {$0$};
+\node[state, accepting]         (1) [right of=0] 		{$1$};
+\node[state, accepting]         (2) [right of=1]       {$2$};
+\path
+(0)	edge [] 		  node {$a$} (1)
+	edge [loop below] node {$c$} (0)
+(1)	edge [] 		  node {$d$} (2)
+(2)	edge [loop right] node {$c$} (2)
+;
+% G2
+\node[initial,state, accepting] (0') [below of=0]      {$0$};
+\node[state, accepting]         (1') [right of=0']		{$1$};
+\node[state, accepting]         (2') [right of=1']     {$2$};
+\path
+(0')	edge [] 		  node {$b$} (1')
+		edge [loop below] node {$c$} (0')
+(1')	edge [] 		  node {$e$} (2')
+(2')	edge [loop right] node {$c$} (2')
+;
+% G3
+\node[initial,state, accepting] (0'') [below of=0']    {$0$};
+\node[state, accepting]         (1'') [right of=0'']	{$1$};
+\node[state, accepting]         (2'') [right of=1'']   {$2$};
+\node[state, accepting]         (3'') [right of=2'']   {$3$};
+\path
+(0'')	edge [] 		  node {$e$} (1'')
+		edge [loop below] node {$c$} (0'')
+(1'')	edge [] 		  node {$o_2$} (2'')
+(2'')	edge [] 		  node {$d$} (3'')
+(3'')	edge [loop right] node {$c$} (3'')
+;
+\end{tikzpicture}
+\caption{Automata, marking languages $L_2, L_3$ and $L_4$}
+\label{fig:G2_4}
+\end{figure}
+
+
+% Projection to common events (G1)
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+semithick, initial text=,	
+	every node/.style={scale=0.7},
+    every state/.style={fill=green,text=black},
+    accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
+    ]
+% \draw[help lines] (0,-2) grid (6,2);
+\node[initial,state] (0)                    {$0$};
+\node[state, accepting, fill=orange]         (2) [right of=0]       {$2$};
+\node[state, accepting, fill=orange]         (4) [right of=2]       {$4$};
+
+\node[initial,state] (0') [] at (5,0)              {$0$};
+\node[state, accepting]         (5) [right of=0'] 		{$5$};
+
+\path
+(0)	edge [] 		 node {$a$} (2)
+(2)	edge [] 		 node {$b$} (4)
+(4)	edge [loop right] node {$c$} (4)
+;
+\path
+(0') edge [] 		 node {$c$} (5)
+(5)	edge [loop right] node {$c$} (5)
+;
+\end{tikzpicture}
+\caption{Automata, marking $F_1$ and $N_1$ languages}
+\label{fig:FN1}
+\end{figure}
+
+
+% Calculating co-faulty language F2
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+semithick, initial text=,	
+	every node/.style={scale=0.7},
+    every state/.style={fill=green,text=black},
+    accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
+    ]
+% \draw[help lines] (0,-2) grid (6,2);
+% F2
+\node[initial,state] (0)                    {$0$};
+\node[state, accepting, fill=orange]         (1) [right of=0] 		{$1$};
+\node[state, accepting, fill=orange]         (2) [right of=1]       {$2$};
+\path
+(0)	edge [] 		  node {$a$} (1)
+(1)	edge [] 		  node {$d$} (2)
+(2)	edge [loop right] node {$c$} (2)
+;
+% F2
+\node[initial,state, accepting] (0') at (5,0) {$0$};
+\path
+(0') edge [loop below] node {$c$} (0')
+;
+\end{tikzpicture}
+\caption{Automata, marking $F_2$ and $N_2$ languages}
+\label{fig:FN2}
+\end{figure}
+
+
+
+% Calculating co-faulty language F4
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+semithick, initial text=,	
+	every node/.style={scale=0.7},
+    every state/.style={fill=green,text=black},
+    accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
+    ]
+% \draw[help lines] (0,-2) grid (6,2);
+% F2
+\node[initial,state] (0)                    {$0$};
+\node[state ]         (1) [right of=0] 		{$1$};
+\node[state, accepting, fill=orange]         (2) [right of=1]       {$2$};
+\path
+(0)	edge [] 		  node {$e$} (1)
+(1)	edge [] 		  node {$d$} (2)
+(2)	edge [loop right] node {$c$} (2)
+;
+% F2
+\node[initial,state, accepting] (0') at (5,0) {$0$};
+\node[state, accepting]         (1') [right of=0'] 		{$1$};
+\path
+(0') edge [loop below] node {$c$} (0')
+	edge [] node {$e$} (1')
+;
+
+\end{tikzpicture}
+\caption{Automata, marking $F_4$ and $N_4$ sublanguages}
+\label{fig:FN4}
+\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
