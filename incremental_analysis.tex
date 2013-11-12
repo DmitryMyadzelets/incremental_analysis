@@ -24,7 +24,6 @@ Systems}, pdfauthor={Dmitry Myadzelets}, bookmarks=false,
 \usetikzlibrary{decorations.pathreplacing}
 \usetikzlibrary{arrows,positioning,automata,shadows,fit,shapes}
 \usepackage{algpseudocode}
-\usepackage{vaucanson-g} %Automata
 
 \begin{document}
 
@@ -710,22 +709,33 @@ all the modules.
 	\Require A set of the system's languages $\{L_j\mid j \in I\}$, faulty and
 	non-faulty languages $L_{i,f}$, $L_{i,nf}$ of the faulty module $i\in I$.
 	\ForAll{$j \in I$}
+		\Comment{Initialization}
 		\State $C_j \leftarrow 
-			P_{\Sigma_j \rightarrow \bigcap_{i\neq j}^I \Sigma_i}(L_j)$
+			P_{\Sigma_j \rightarrow \bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}(L_j)$
 		\State $F_j \leftarrow \emptyset, N_j \leftarrow \emptyset$
+		\State $\Sigma_{j,c} \leftarrow \{\sigma \in s \mid s \in C_j\}$
 	\EndFor
-	\Procedure{co-languages}{$i$, $F_i$, $N_i$}
-		\ForAll{$j \in I \mid j \textrm{ is adjacent to } i$}
+	\Procedure{co-languages}{$k$, $F_k$, $N_k$}
+		\ForAll{$j \in I \mid j\neq i, j \textrm{ is adjacent to } k,
+				\Sigma_{j,c}\neq \emptyset$} 
 			\State $F'_j \leftarrow (
-			P_{\Sigma_j \rightarrow \Sigma_j \cap \Sigma_i}^{-1}(C_j) 
-			\cap F_i^{-1})\cap C_j$
-			\State $N'_j \leftarrow (C_j^{-1} \cap N_i^{-1})\cap
-			C_j$ \State $K \leftarrow F'_j \cap N'_j$ \State $F'_j \leftarrow F'_j \backslash K$
+			P_{\Sigma_j \rightarrow \Sigma_j \cap \Sigma_k}^{-1}(C_j) 
+			\cap F_k^{-1})\cap C_j$
+			\State $N'_j \leftarrow (C_j^{-1} \cap N_k^{-1})\cap C_j$ 
+			\State $K \leftarrow \overline{F'_j \cap N'_j}$ 
+			\State $F'_j \leftarrow F'_j \backslash K$
 			\State $N'_j \leftarrow N'_j \backslash K$
 			\If{$F'_j \backslash F_j \neq \emptyset \lor 
 				 N'_j \backslash N_j \neq \emptyset$}
 				\State $F_j \leftarrow F_j \cup F'_j$
 				\State $N_j \leftarrow N_j \cup N'_j$
+				\State $\Sigma_{j,c} \leftarrow
+					\{\sigma \in s \}$, where
+				\State $s \in
+						\left[(\overline{F_j} \backslash F_j) \cup
+						(\overline{N_j} \backslash N_j)\right] \backslash	
+						(\overline{F_j} \cap \overline{N_j})
+						$
 				\State \textproc{co-languages}$(j, F_j, N_j)$
 			\EndIf
 		\EndFor
@@ -736,8 +746,9 @@ all the modules.
 	\State $N_i \leftarrow 
 		P_{\Sigma_i \rightarrow \bigcap_{j\neq i}^I \Sigma_j}(L_{i,nf})$
 	\State \textproc{co-languages}($i$, $F_i$, $N_i$)
-	
+	\Comment{Entrance to the cycle}	
 	\ForAll{$j \in I$}
+		\Comment{Finalization}
 		\State $L_{j,cf}:= L_j \cap P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(F_j)$
 		\State $L_{j,cnf}:= L_j \cap P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(N_j)$
 	\EndFor
@@ -806,21 +817,22 @@ all the modules.
 \label{sec:Example}
 
 \begin{figure}[t]
-\centering
 \begin{tikzpicture}[->,>=stealth, node distance=2.5cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
-    every state/.style={fill=green,text=black},
+    every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
 % \draw[help lines] (0,-2) grid (6,2);
+% G1
 \node[initial,state] (0)                    {$0$};
+\node[above left = 0.5em of 0]{$L_{1}$};
 \node[state, accepting]         (1) [above right of=0] {$1$};
 \node[state, accepting]         (2) [right of=1]       {$2$};
 \node[state, accepting]         (3) [right of=2]       {$3$};
 \node[state, accepting]         (4) [right of=3]       {$4$};
 \node[state, accepting]         (5) [right of=0] 		{$5$};
-
+\node[]         () [below right of=0] 		{}; %some blank space
 \path
 (0)	edge [] 		 node {$f$} (1)
 (1)	edge [] 		 node {$a$} (2)
@@ -831,30 +843,76 @@ semithick, initial text=,
 (5)	edge [loop right] node {$c$} (5)
 ;
 \end{tikzpicture}
-\caption{Automaton, marking language $L_1$. $\Sigma_o = \{o_1\}$, $\Sigma_f =
-\{f\}$}
-\label{fig:G1}
+\begin{tikzpicture}[->,>=stealth, node distance=2.5cm, auto, shorten >=1pt,
+semithick, initial text=,	
+	every node/.style={scale=0.7},
+    every state/.style={fill=green!40,text=black},
+    accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
+    ]
+% \draw[help lines] (0,-2) grid (6,2);
+% G2
+\node[initial,state, accepting] (0)                    {$0$};
+\node[above left = 0.5em of 0]{$L_{2}$};
+\node[state, accepting]         (1) [right of=0] 		{$1$};
+\node[state, accepting]         (2) [right of=1]       {$2$};
+\path
+(0)	edge [] 		  node {$a$} (1)
+	edge [loop below] node {$c$} (0)
+(1)	edge [] 		  node {$d$} (2)
+(2)	edge [loop right] node {$c$} (2)
+;
+% G3
+\node[initial,state, accepting] (0') [below of=0]      {$0$};
+\node[above left = 0.5em of 0']{$L_{3}$};
+\node[state, accepting]         (1') [right of=0']		{$1$};
+\node[state, accepting]         (2') [right of=1']     {$2$};
+\path
+(0')	edge [] 		  node {$b$} (1')
+		edge [loop below] node {$c$} (0')
+(1')	edge [] 		  node {$e$} (2')
+(2')	edge [loop right] node {$c$} (2')
+;
+% G4
+\node[initial,state, accepting] (0'') [below of=0']  {$0$};
+\node[above left = 0.5em of 0'']{$L_{4}$}; 
+\node[state, accepting]         (1'') [right of=0'']	{$1$};
+\node[state, accepting]         (2'') [right of=1'']   {$2$};
+\node[state, accepting]         (3'') [right of=2'']   {$3$};
+\path
+(0'')	edge [] 		  node {$e$} (1'')
+		edge [loop below] node {$c$} (0'')
+(1'')	edge [] 		  node {$o_2$} (2'')
+(2'')	edge [] 		  node {$d$} (3'')
+(3'')	edge [loop right] node {$c$} (3'')
+;
+\end{tikzpicture}
+\caption{Automata marking languages $L_1, L_2, L_3$ and $L_4$. $\Sigma_o =
+\{o_1, o_2\}$, $\Sigma_f = \{f\}$}
+\label{fig:G1-4}
 \end{figure}
 
 
 % Fautly and non-faulty
-\begin{figure}[t]
-\centering
+\begin{figure}[t!]
+% \centering
 \begin{tikzpicture}[->,>=stealth, node distance=2.5cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
-    every state/.style={fill=green,text=black},
+    every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
 % \draw[help lines] (0,-2) grid (6,2);
 \node[initial,state] (0)                    {$0$};
+\node[above left = 0.5em of 0]{$L_{1,f}$};
 \node[state, accepting, fill=orange]         (1) [right of=0] 		{$1$};
 \node[state, accepting, fill=orange]         (2) [right of=1]       {$2$};
 \node[state, accepting, fill=orange]         (3) [right of=2]       {$3$};
 \node[state, accepting, fill=orange]         (4) [right of=3]       {$4$};
 
 \node[initial,state] (0') [below of=0]                   {$0$};
-\node[state, accepting]         (5) [right of=0'] 		{$5$};
+\node[above left = 0.5em of 0']{$L_{1,nf}$};
+\node[state, accepting]         (5)
+[right of=0'] 		{$5$};
 
 \path
 (0)	edge [] 		 node {$f$} (1)
@@ -868,75 +926,28 @@ semithick, initial text=,
 (5)	edge [loop right] node {$c$} (5)
 ;
 \end{tikzpicture}
-\caption{Automata, marking the faulty and non-faulty sublanguages of $L_1$}
+\caption{Automata marking the faulty and non-faulty sublanguages of $L_1$}
 \label{fig:G1_faulty}
 \end{figure}
 
 
-
-% G2-G3-G4
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[->,>=stealth, node distance=2.5cm, auto, shorten >=1pt,
-semithick, initial text=,	
-	every node/.style={scale=0.7},
-    every state/.style={fill=green,text=black},
-    accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
-    ]
-% \draw[help lines] (0,-2) grid (6,2);
-% G1
-\node[initial,state, accepting] (0)                    {$0$};
-\node[state, accepting]         (1) [right of=0] 		{$1$};
-\node[state, accepting]         (2) [right of=1]       {$2$};
-\path
-(0)	edge [] 		  node {$a$} (1)
-	edge [loop below] node {$c$} (0)
-(1)	edge [] 		  node {$d$} (2)
-(2)	edge [loop right] node {$c$} (2)
-;
-% G2
-\node[initial,state, accepting] (0') [below of=0]      {$0$};
-\node[state, accepting]         (1') [right of=0']		{$1$};
-\node[state, accepting]         (2') [right of=1']     {$2$};
-\path
-(0')	edge [] 		  node {$b$} (1')
-		edge [loop below] node {$c$} (0')
-(1')	edge [] 		  node {$e$} (2')
-(2')	edge [loop right] node {$c$} (2')
-;
-% G3
-\node[initial,state, accepting] (0'') [below of=0']    {$0$};
-\node[state, accepting]         (1'') [right of=0'']	{$1$};
-\node[state, accepting]         (2'') [right of=1'']   {$2$};
-\node[state, accepting]         (3'') [right of=2'']   {$3$};
-\path
-(0'')	edge [] 		  node {$e$} (1'')
-		edge [loop below] node {$c$} (0'')
-(1'')	edge [] 		  node {$o_2$} (2'')
-(2'')	edge [] 		  node {$d$} (3'')
-(3'')	edge [loop right] node {$c$} (3'')
-;
-\end{tikzpicture}
-\caption{Automata, marking languages $L_2, L_3$ and $L_4$}
-\label{fig:G2_4}
-\end{figure}
-
-
 % Projection to common events (G1)
-\begin{figure}[t]
-\centering
+\begin{figure}[t!]
+% \centering
 \begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
-    every state/.style={fill=green,text=black},
+    every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
 % \draw[help lines] (0,-2) grid (6,2);
 \node[initial,state] (0)                    {$0$};
+\node[above left = 0.5em of 0]{$F_1$};
 \node[state, accepting, fill=orange]         (2) [right of=0]       {$2$};
 \node[state, accepting, fill=orange]         (4) [right of=2]       {$4$};
 
 \node[initial,state] (0') [] at (5,0)              {$0$};
+\node[above left = 0.5em of 0']{$N_1$};
 \node[state, accepting]         (5) [right of=0'] 		{$5$};
 
 \path
@@ -949,23 +960,18 @@ semithick, initial text=,
 (5)	edge [loop right] node {$c$} (5)
 ;
 \end{tikzpicture}
-\caption{Automata, marking $F_1$ and $N_1$ languages}
-\label{fig:FN1}
-\end{figure}
+\\
 
-
-% Calculating co-faulty language F2
-\begin{figure}[t]
-\centering
 \begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
-    every state/.style={fill=green,text=black},
+    every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
 % \draw[help lines] (0,-2) grid (6,2);
 % F2
 \node[initial,state] (0)                    {$0$};
+\node[above left = 0.5em of 0]{$F_2$};
 \node[state, accepting, fill=orange]         (1) [right of=0] 		{$1$};
 \node[state, accepting, fill=orange]         (2) [right of=1]       {$2$};
 \path
@@ -975,28 +981,21 @@ semithick, initial text=,
 ;
 % F2
 \node[initial,state, accepting] (0') at (5,0) {$0$};
+\node[above left = 0.5em of 0']{$N_2$};
 \path
 (0') edge [loop below] node {$c$} (0')
 ;
 \end{tikzpicture}
-\caption{Automata, marking $F_2$ and $N_2$ languages}
-\label{fig:FN2}
-\end{figure}
-
-
-
-% Calculating co-faulty language F4
-\begin{figure}[t]
-\centering
 \begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
-    every state/.style={fill=green,text=black},
+    every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
 % \draw[help lines] (0,-2) grid (6,2);
-% F2
+% F4
 \node[initial,state] (0)                    {$0$};
+\node[above left = 0.5em of 0]{$F_4$};
 \node[state ]         (1) [right of=0] 		{$1$};
 \node[state, accepting, fill=orange]         (2) [right of=1]       {$2$};
 \path
@@ -1004,18 +1003,66 @@ semithick, initial text=,
 (1)	edge [] 		  node {$d$} (2)
 (2)	edge [loop right] node {$c$} (2)
 ;
-% F2
 \node[initial,state, accepting] (0') at (5,0) {$0$};
-\node[state, accepting]         (1') [right of=0'] 		{$1$};
+\node[above left = 0.5em of 0']{$N_4$};
 \path
 (0') edge [loop below] node {$c$} (0')
-	edge [] node {$e$} (1')
 ;
-
 \end{tikzpicture}
-\caption{Automata, marking $F_4$ and $N_4$ sublanguages}
-\label{fig:FN4}
+\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+semithick, initial text=,	
+	every node/.style={scale=0.7}, 
+	every state/.style={fill=green!40,text=black},
+    accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
+    ]
+% \draw[help lines] (0,-2) grid (6,2);
+% F3
+\node[initial,state] (0)                    {$0$};
+\node[above left = 0.5em of 0]{$F_3$};
+\node[state, accepting, fill=orange]         (1) [right of=0] 		{$1$};
+\node[state, accepting, fill=orange]         (2) [right of=1]       {$2$};
+\path
+(0)	edge [] 		  node {$b$} (1)
+(1)	edge [] 		  node {$e$} (2)
+(2)	edge [loop right] node {$c$} (2)
+;
+\node[initial,state, accepting] (0') at (5,0) {$0$};
+\node[above left = 0.5em of 0']{$N_3$};
+\path
+(0') edge [loop below] node {$c$} (0')
+;
+\end{tikzpicture}
+\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+semithick, initial text=,	
+	every node/.style={scale=0.7},
+    every state/.style={fill=green!40,text=black},
+    accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
+    ]
+% \draw[help lines] (0,-2) grid (6,2);
+% F4
+\node[initial,state] (0)                    {$0$};
+\node[above left = 0.5em of 0]{$F_4$};
+\node[state, accepting, fill=orange]         (1) [right of=0] 		{$1$};
+\node[state, accepting, fill=orange]         (2) [right of=1]       {$2$};
+\path
+(0)	edge [] 		  node {$e$} (1)
+(1)	edge [] 		  node {$d$} (2)
+(2)	edge [loop right] node {$c$} (2)
+;
+\node[initial,state, accepting] (0') at (5,0) {$0$};
+\node[above left = 0.5em of 0']{$N_4$};
+\path
+(0') edge [loop below] node {$c$} (0')
+;
+\end{tikzpicture}
+
+\caption{Automata marking sublanguages $F_1$ and $N_1$ of the faulty module,
+and co-faulty and co-non faulty languages of the modules 2, 3 and 4 in the
+order they are composed: 1-2, 2-4, 1-3, 3-4. Note, that the sublanguage $F_4$
+is defined partially firstly, then fully}
+\label{fig:FN1}
 \end{figure}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
