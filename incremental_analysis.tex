@@ -484,8 +484,8 @@ itself. This fact allows us to simplify equation
 
 
 Below we present an algorithm which, given a module with the co-faulty
-sublanguage defined, computes the co-faulty and and co-non-faulty languages of
-an adjacent module.
+sublanguage defined, computes the co-faulty and co-non-faulty languages for all
+the rest modules of the system.
 
 % In the following, when we assume that statements for co-faulty sublanguages also
 % valid for co-non-faulty sublanguages.
@@ -664,6 +664,7 @@ all the modules.
 	\Require A set of the system's languages $\{L_j\mid j \in I\}$, faulty and
 	non-faulty languages $L_{i,f}$, $L_{i,nf}$ of the faulty module $i\in I$.
 	\ForAll{$j \in I$}
+	\label{alg:fcf_init}
 		\Comment{Initialization}
 		\State $C_j \leftarrow 
 			P_{\Sigma_j \rightarrow \bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}(L_j)$
@@ -678,16 +679,19 @@ all the modules.
 			\cap 
 			P_{\Sigma_j \rightarrow \Sigma_j \cap \Sigma_k}^{-1}(C_j) 
 			)\cap C_j$
+			\label{alg:fcf_partial_begin}
 			\State $N'_j \leftarrow (
 			P_{\Sigma_j \rightarrow \Sigma_j \cap \Sigma_k}^{-1}(N_k)
 			\cap 
 			P_{\Sigma_j \rightarrow \Sigma_j \cap \Sigma_k}^{-1}(C_j) 
 			)\cap C_j$ 
-			\State $K \leftarrow \overline{F'_j \cap N'_j}$ 
+			\State $K \leftarrow \overline{F'_j \cap N'_j}$
 			\State $F'_j \leftarrow F'_j \backslash K$
 			\State $N'_j \leftarrow N'_j \backslash K$
+			\label{alg:fcf_partial_end}
 			\If{$F'_j \backslash F_j \neq \emptyset \lor 
 				 N'_j \backslash N_j \neq \emptyset$}
+				\label{alg:fcf_update}
 				\State $F_j \leftarrow F_j \cup F'_j$
 				\State $N_j \leftarrow N_j \cup N'_j$
 				\State $\Sigma_{j,c} \leftarrow
@@ -703,20 +707,54 @@ all the modules.
 	\EndProcedure
 	
 	\State $F_i \leftarrow 
-		P_{\Sigma_i \rightarrow \bigcap_{j\neq i}^I \Sigma_j}(L_{i,f})$
+		\label{alg:fcf_Fi}
+		P_{\Sigma_i \rightarrow \bigcup_{j\neq i}^I \Sigma_i\cap \Sigma_j}(L_{i,f})$
 	\State $N_i \leftarrow 
-		P_{\Sigma_i \rightarrow \bigcap_{j\neq i}^I \Sigma_j}(L_{i,nf})$
+		P_{\Sigma_i \rightarrow \bigcup_{j\neq i}^I \Sigma_i\cap \Sigma_j}(L_{i,nf})$
 	\State \textproc{co-languages}($i$, $F_i$, $N_i$)
 	\Comment{Beginning of recursion}	
-	\ForAll{$j \in I$}
+	\ForAll{$j \in I \mid j \neq i$}
 		\Comment{Finalization}
-		\State $L_{j,cf}:= L_j \cap P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(F_j)$
-		\State $L_{j,cnf}:= L_j \cap P_{\Sigma_j \rightarrow \Sigma_c}^{-1}(N_j)$
+		\label{alg:fcf_final}
+		\State $L_{j,cf}:= L_j \cap 
+		P_{\Sigma_j \rightarrow \bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}^{-1}(F_j)$
+		\State $L_{j,cnf}:= L_j \cap 
+		P_{\Sigma_j \rightarrow \bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}^{-1}(N_j)$
 	\EndFor
 	\\
 	\Return $\{L_{j,cf}\}$, $\{L_{j,cnf}\}$
 \end{algorithmic}
 \end{algorithm}
+
+The above algorithm starts from a preliminary step at line \ref{alg:fcf_init}.
+At the step projection to the common events $C_j$ are computed for all the local
+languages. Projections of co-faulty and co-non-faulty sublanguages and
+to the common events, denoted as $F_j, N_j$, are empty. Event sets
+$\Sigma_{j,c}$ are set of the common events, which don't belong neither to co-faulty and
+co-non-faulty sublanguages nor to intersection of the sublanguages'
+prefix-closures. The role of these sets will be clarified later.
+The algorithm with the recursive procedure \emph{Co-Languages} computes $F_j$
+and $N_j$ for all the system's modules, except the module with a fault; the
+procedure operates with common events only. Before entering the procedure 
+projections of the faulty module's sublanguages, $F_i, N_i$ are computed at the
+step \ref{alg:fcf_Fi}.
+
+The recursive procedure computes all projections $F_j, N_j$ of the adjacent
+modules for a given module $k$ (we say that two modules are adjacent to each
+other if their languages have events in common). At the first steps
+\ref{alg:fcf_partial_begin}-\ref{alg:fcf_partial_end} of the
+procedure we compute $F_j, N_j$ with respect to the module $k$; these
+projections are partial. At the step \ref{alg:fcf_update} we check if some
+co-faulty or co-non-faulty strings can be added to the projections computed
+earlier. If so, then we update $F_j, N_j$, $\Sigma_{j,c}$ and call the same
+procedure to update projections of the adjacent modules. Thus, due to recursion
+the projections $F_j, N_j$ are updating with respect to every other module
+whenever the co-faulty or co-non-faulty projections of that module changed.
+
+Finally, all the co-faulty and co-non-faulty sublanguages are calculated
+for each module at the step \ref{alg:fcf_final}.
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
