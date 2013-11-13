@@ -91,7 +91,7 @@ the final point, when all the modules are composed into one monolithic module,
 remain the same. Assuming that the system is diagnosable, the average size of a
 diagnoser grows much faster, since it is exponential with respect to the average
 size of a module, in the worst case.
-The amount of events, the diagnosers have to exchange among each other in order
+The amount of events the diagnosers have to exchange among each other, in order
 to decide if a fault occurred, is decreasing. This reason the diagnosers require
 less event for decision making is due to the fact that they become
 self-sufficient, since the amount of observable events available for each
@@ -673,7 +673,7 @@ all the modules.
 		\State $F_j \leftarrow \emptyset, N_j \leftarrow \emptyset$
 		\State $\Sigma_{j,c} \leftarrow \{\sigma \in s \mid s \in C_j\}$
 	\EndFor
-	\Procedure{co-languages}{$k$, $F_k$, $N_k$}
+	\Procedure{propagate-fn}{$k$, $F_k$, $N_k$}
 		\ForAll{$j \in I \mid j\neq i, j \textrm{ is adjacent to } k,
 				\Sigma_{j,c}\neq \emptyset$} 
 			\State $F'_j \leftarrow (
@@ -703,7 +703,7 @@ all the modules.
 						(\overline{N_j} \backslash N_j)\right] \backslash	
 						(\overline{F_j} \cap \overline{N_j})
 						$
-				\State \textproc{co-languages}$(j, F_j, N_j)$
+				\State \textproc{propagate-fn}$(j, F_j, N_j)$
 			\EndIf
 		\EndFor
 	\EndProcedure
@@ -718,9 +718,9 @@ all the modules.
 	\ForAll{$j \in I \mid j \neq i$}
 		\Comment{Finalization}
 		\label{alg:fcf_final}
-		\State $L_{j,cf}:= L_j \cap 
+		\State $L_{j,cf} \leftarrow L_j \cap 
 		P_{\Sigma_j \rightarrow \bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}^{-1}(F_j)$
-		\State $L_{j,cnf}:= L_j \cap 
+		\State $L_{j,cnf} \leftarrow L_j \cap 
 		P_{\Sigma_j \rightarrow \bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}^{-1}(N_j)$
 	\EndFor
 	\\
@@ -729,13 +729,13 @@ all the modules.
 \end{algorithm}
 
 The above algorithm starts from a preliminary step at line \ref{alg:fcf_init}.
-At the step projection to the common events $C_j$ are computed for all the local
-languages. Projections of co-faulty and co-non-faulty sublanguages and
+At this step a projection to the common events $C_j$ is computed for all the
+local languages. Projections of co-faulty and co-non-faulty sublanguages and
 to the common events, denoted as $F_j, N_j$, are empty. Event sets
 $\Sigma_{j,c}$ are set of the common events, which don't belong neither to co-faulty and
 co-non-faulty sublanguages nor to intersection of the sublanguages'
 prefix-closures. The role of these sets will be clarified later.
-The algorithm with the recursive procedure \emph{Co-Languages} computes $F_j$
+The algorithm with the recursive procedure \emph{propagate-fn} computes $F_j$
 and $N_j$ for all the system's modules, except the module with a fault; the
 procedure operates with common events only. Before entering the procedure 
 projections of the faulty module's sublanguages, $F_i, N_i$ are computed at the
@@ -752,65 +752,102 @@ earlier. If so, then we update $F_j, N_j$, $\Sigma_{j,c}$ and call the same
 procedure to update projections of the adjacent modules. Thus, due to recursion
 the projections $F_j, N_j$ are updating with respect to every other module
 whenever the co-faulty or co-non-faulty projections of that module changed.
-
 Finally, all the co-faulty and co-non-faulty sublanguages are calculated
 for each module at the step \ref{alg:fcf_final}.
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Diagnosability verification}
+\subsection{Construction of the virtual module}
 
-\begin{algorithm} Deciding diagnosability, and making a virtual module.
-\label{alg:diagnosability}
+\begin{algorithm} Deciding if the module is a candidate for the virtual module
+\label{alg:propagate-d}
 \begin{algorithmic}[1]
-	\Require An index  $i$ of the faulty module, and the sets of co-faulty and
-	co-non-faulty languages $\{L_{j,cf}\}$, $\{L_{j,cnf}\}$, $i,j\in I$.
-	\State $V \leftarrow \{i\}$ \Comment{Virtual module}
-	\ForAll{$j\in I \mid j\neq i$}
-		\State $F_{j} \leftarrow M(L_{j,cf}\backslash \overline{L_{j,cf}})$
-		\State $N_{j} \leftarrow M(L_{j,cnf}\backslash \overline{L_{j,cnf}})$
-		\If{$F_{j} = \emptyset$}
-			\If{$N_{j} = \emptyset \lor L_{j,cf} \textrm{ has a cycle}$}
-			\State report that the system is not diagnosable 
+	\Require The index  $i \in I$ of the faulty module, 
+	$k \in I \mid M(L_{k,cf}) \neq \emptyset \lor M(L_{k,cnf}) \neq
+	\emptyset, k \neq i$, the sets $\{L_{j,cf}\}, \{L_{j,cnf}\}, j \in I$.
+% 	\State $V \leftarrow \{i\}$ \Comment{Virtual module}
+
+	\ForAll{$j \in I$}
+	\label{alg:fco_init}
+		\State $D_{j,f} \leftarrow
+			P_{\Sigma_j \rightarrow \Sigma_{j,o} \cup 
+			\bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}(L_{j,f})$
+		\State $D_{j,nf} \leftarrow
+			P_{\Sigma_j \rightarrow \Sigma_{j,o} \cup 
+			\bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}(L_{j,nf})$
+	\EndFor
+	
+	\Procedure{propagate-d}{$k$, $D_{k,f}$, $D_{k,nf}$}
+		\ForAll{$j \in I \mid j \textrm{ is adjacent to } k$}
+			\State $D'_{j,f} \leftarrow 
+			P_{\Sigma_j \cup \Sigma_k \rightarrow \Sigma_j \cup \Sigma_o}
+			(P_{\Sigma_j \cup \Sigma_k \rightarrow \Sigma_j}^{-1}(F_j) 
+			\cap 
+			P_{\Sigma_j \cup \Sigma_k \rightarrow \Sigma_k}^{-1}(D_{k,f}))$
+			\If{$(D'_{j,f}\backslash D_{j,f} \neq \emptyset) \lor
+				(D'_{j,nf}\backslash D_{j,nf} \neq \emptyset)$}
+				\State $D_{j,f}\leftarrow D'_{j,f}$
+				\State $D_{j,nf}\leftarrow D'_{j,nf}$
+				\State \textproc{propagate-d}($j$, $D_{j,f}$, $D_{j,nf}$)
 			\EndIf
-		\EndIf
-	\EndFor
-	\ForAll{$j, k \in I \mid j, k\neq i$}
-		\State If $M_{j,k}^{-1}(F) \cap M_{k,j}^{-1}(N)$ has an indeterminate cycle then
-		report that the system is not diagnosable, continue otherwise.
-		\State \ldots
-	\EndFor
+		\EndFor 
+	\EndProcedure
+	
+	\State \textproc{propagate-d}($k$, $D_{k,f}$, $D_{k,nf}$)
+	\label{alg:fco_enter_recursion}
+	\State$
+	\label{alg:fco_finalize}
+	\begin{array}{ll}
+	L_{i,f}^{ext} \leftarrow 
+	P_{\Sigma_i \rightarrow \Sigma_i \cup \Sigma_o} ( &  
+	P_{\Sigma_i \cup \Sigma_o \rightarrow \Sigma_i}^{-1}(L_{i,f}) \cap \\ 
+	& 
+	P_{\Sigma_i \cup \Sigma_o \rightarrow \Sigma_i}^{-1}(D_{i,f}))
+	\end{array}
+	$
+	\State$
+	\begin{array}{ll}
+	L_{i,nf}^{ext} \leftarrow 
+	P_{\Sigma_i \rightarrow \Sigma_i \cup \Sigma_o} ( &  
+	P_{\Sigma_i \cup \Sigma_o \rightarrow \Sigma_i}^{-1}(L_{i,nf}) \cap \\ 
+	& 
+	P_{\Sigma_i \cup \Sigma_o \rightarrow \Sigma_i}^{-1}(D_{i,nf}))
+	\end{array}
+	$
 	\\
-	\Return $V$
+	\Return $L_{i,f}^{ext}, L_{i,nf}^{ext}$
 \end{algorithmic}
 \end{algorithm}
 
+The structure of the above algorithm is similar to Algorithm
+\ref{alg:full_co_faulty}. It starts from computing projections to common and
+observable events for the co-faulty and co-non-faulty sublanguages of each
+module's language. Then, starting from the module $k$ which has observable
+events in its sublanguages, begins a recursive procedure at step
+\ref{alg:fco_enter_recursion}. In the procedure we collect only observable
+events of other modules which are related to co-faulty or co-non-faulty
+sublanguages. Then we propagated these events down to the faulty module.
+Finally, at the step \ref{alg:fco_finalize}, the faulty and non-faulty
+sublanguages of the faulty module are extended with observable events.
 
-\begin{enumerate}
-  \item Starting from the faulty module, compute co-faulty and co-non-faulty
-  local sublanguages. Make a subgraph $\mathcal{G}_f$ of the adjacency graph
-  $\mathcal{G}$, removing nodes where modules have neither a co-faulty nor a
-  co-non-faulty sublanguage.
-  
-  \item Get a subset of modules where the co-faulty or co-non-faulty
-  sublanguages, excluding their prefixes, have observable events. Mark such
-  nodes on the graph $\mathcal{G}_f$.
-  
-  \item If there is a path in the graph from the faulty module to at least one
-  not marked node, then report that the system is not diagnosable (implies that
-  there is an indeterminate cycle, under assumption that the languages are
-  live), continue otherwise.
-  
-  \item Make pairwise composition of all the co-faulty and co-non-faulty
-  languages with respect to observable events. If the language of at least one
-  composition is not diagnosable, then the system is not diagnosable.
-  Otherwise, each time a trace brakes due to an observable event, mark the node
-  which has this event as a member for the virtual module. If all the paths are
-  broken, then report that the system is diagnosable and return the set of nodes
-  for the virtual module.
-\end{enumerate}
+The result of the Algorithm \ref{alg:propagate-d}, the faulty and non-faulty
+sublanguages extended with observable events, can be used to verify
+diagnosability now. Any approach, which allows us to check for the presence of
+indistinguishable strings in the language (the faulty and non-faulty
+sublanguages can be united, if necessary), is suitable. We can have the
+following outcomes after verification: a) no indistinguishable strings are
+broken, b) no indistinguishable strings left, and c) some indistinguishable
+strings are broken. In case (a) we pick another module $k \in I$ satisfying
+requirements of the Algorithm \ref{alg:propagate-d} for further processing and
+verification. In case (b) we may construct a virtual module of the faulty module
+$i$ and the module $k$ and declare that the fault is diagnosable with respect to
+the virtual module $\{i, k\}$ and stop, or continue and check if exists another
+module which can also be used to build a virtual module. In case (c) we should
+pick additional module satisfying requirements of the Algorithm
+\ref{alg:propagate-d} and continue the process until all the indistinguishable
+strings are broken. The following section analyzes what may be considered as a
+criteria for choosing the module with observable support $k$.
 
 
 \subsection{Algorithm to choose a module with observable support}
@@ -875,7 +912,7 @@ criteria aimed, for instance, to decrease computational burden.
 
 
 \begin{figure}[t]
-\begin{tikzpicture}[->,>=stealth, node distance=2.5cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
     every state/.style={fill=green!40,text=black},
@@ -901,7 +938,7 @@ semithick, initial text=,
 (5)	edge [loop right] node {$c$} (5)
 ;
 \end{tikzpicture}
-\begin{tikzpicture}[->,>=stealth, node distance=2.5cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
     every state/.style={fill=green!40,text=black},
@@ -951,9 +988,9 @@ semithick, initial text=,
 
 
 % Fautly and non-faulty
-\begin{figure}[t!]
+\begin{figure}[t]
 % \centering
-\begin{tikzpicture}[->,>=stealth, node distance=2.5cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
     every state/.style={fill=green!40,text=black},
@@ -992,7 +1029,7 @@ semithick, initial text=,
 % Projection to common events (G1)
 \begin{figure}[t!]
 % \centering
-\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
     every state/.style={fill=green!40,text=black},
@@ -1020,7 +1057,7 @@ semithick, initial text=,
 \end{tikzpicture}
 \\
 
-\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
     every state/.style={fill=green!40,text=black},
@@ -1044,7 +1081,7 @@ semithick, initial text=,
 (0') edge [loop below] node {$c$} (0')
 ;
 \end{tikzpicture}
-\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
     every state/.style={fill=green!40,text=black},
@@ -1067,7 +1104,7 @@ semithick, initial text=,
 (0') edge [loop below] node {$c$} (0')
 ;
 \end{tikzpicture}
-\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7}, 
 	every state/.style={fill=green!40,text=black},
@@ -1090,7 +1127,7 @@ semithick, initial text=,
 (0') edge [loop below] node {$c$} (0')
 ;
 \end{tikzpicture}
-\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
     every state/.style={fill=green!40,text=black},
@@ -1125,7 +1162,7 @@ sublanguage $F_4$ is defined partially at first, then fully}
 % Fautly and non-faulty
 \begin{figure}[t]
 % \centering
-\begin{tikzpicture}[->,>=stealth, node distance=2.5cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
     every state/.style={fill=green!40,text=black},
@@ -1156,7 +1193,7 @@ equal to the ones depicted in the Figure \ref{fig:FN}}
 
 % Projections to common and observable events
 \begin{figure}[t]
-\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7}, 
 	every state/.style={fill=green!40,text=black},
@@ -1176,7 +1213,7 @@ semithick, initial text=,
 (2')	edge [loop right] node {$c$} (2')
 ;
 \end{tikzpicture}
-\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
     every state/.style={fill=green!40,text=black},
@@ -1194,7 +1231,7 @@ semithick, initial text=,
 (2)	edge [loop right] node {$c$} (2)
 ;
 \end{tikzpicture}
-\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
     every state/.style={fill=green!40,text=black},
@@ -1204,17 +1241,20 @@ semithick, initial text=,
 \node[initial,state] (0)                    {$0$};
 \node[above left = 0.5em of 0]{$D_{1,f}$};
 \node[state, accepting, fill=orange]         (2) [right of=0]       {$2$};
-\node[state, accepting, fill=orange]         (4) [right of=2]       {$4$};
-\node[state, accepting, fill=orange]         (4')[ right of=4]{$4'$};
+\node[state, accepting, fill=orange]         (2') [below of=2]      
+{$2'$}; \node[state, accepting, fill=orange]         (4) [right of=2]      {$4$};
+\node[state, accepting, fill=orange]         (4')[below of=4]{$4'$};
 \path
 (0)	edge [] 		 node {$a$} (2)
 (2)	edge [] 		 node {$b$} (4)
-(4)	edge [loop below] node {$c$} (4)
+	edge [] 		node {$o_2$} (2')
+(2')edge [] 		 node {$b$} (4')
+(4)	edge [loop right] node {$c$} (4)
 	edge [] 		node {$o_2$} (4')
 (4')edge [loop right] node {$c$} (4')
 ;
 \end{tikzpicture}
-\begin{tikzpicture}[->,>=stealth, node distance=2.1cm, auto, shorten >=1pt,
+\begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
 	every node/.style={scale=0.7},
     every state/.style={fill=green!40,text=black},
@@ -1235,7 +1275,7 @@ semithick, initial text=,
 \end{tikzpicture}
 \caption{Automata marking $D_{j,f}$ of the modules 1, 2 and 3 in
 the order they are composed (top-down): 4-3, 4-2, 2-1, 3-1. Automata marking
-$D_{j,nf}$ are not depicted since they have no observable events$}
+$D_{j,nf}$ are not depicted since they have no observable events}
 \label{fig:D}
 \end{figure}
 
