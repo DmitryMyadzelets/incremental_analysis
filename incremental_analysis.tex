@@ -236,14 +236,17 @@ automata and languages from these sets. The \emph{global} language of the system
 is defined by the parallel composition \cite{cassandras_introduction_2010} of
 its local languages:
 $L := \parallel_{i \in I} L_i$.
-The natural projection is commonly defined over Kleene closure on event sets.
-We restrict it, for simplicity of notation, to the system's languages as
+The natural projection is defined over Kleene closure on event sets:
+$\Sigma^* \rightarrow \Sigma_i^*$. We extend it to the system's languages as
 follows: $P_i(L) := \{s\mid s\in L_{i}\}$, and 
 $P_i^{-1}(L_{i}) := \{s \mid s \in L, P_i(s) \in L_i\}, ~i \in I$.
-We also define natural projection over observable events for the index set as
-follows: $M_i :\Sigma_i^* \rightarrow \Sigma_{i,o}^*$, and 
-natural projection over common events: 
-$P_{i,c} : \Sigma_i \rightarrow \Sigma_i \cap \bigcup_{j\neq i}^I\Sigma_j$.
+We also define natural projection over observable events for the index set: 
+$M_i :\Sigma_i^* \rightarrow \Sigma_{i,o}^*$,natural projection over common
+events:
+$P_{i,c} : \Sigma_i^* \rightarrow (\Sigma_i \cap \bigcup_{j\neq
+i}^I\Sigma_j)^*$, and natural projection over observable and common events:
+$P_{i,co} : (\Sigma_i \cup \Sigma_o)^* \rightarrow (\Sigma_{o} \cup (\Sigma_i
+\cap \bigcup_{j\neq i}^I\Sigma_j))^*$
 
 
 % \subsection{Adjacency graph}
@@ -783,13 +786,14 @@ local languages. Projections of co-faulty and co-non-faulty sublanguages and
 to the common events, denoted as $F_j, N_j$, are empty. Event sets
 $\Sigma_{j,c}$ are sets of the common events, which don't belong neither to
 co-faulty and co-non-faulty sublanguages nor to intersection of the sublanguages'
-prefix-closures. Since the sublanguages are not defined in the beginning, the
+prefix-closures. Since that sublanguages are not defined in the beginning, the
 event sets contain all events from the projections. A role of these sets will be
 clarified later.
 The recursive procedure \emph{propagate-fn} computes $F_j$ and $N_j$ for all the
 system's modules, except the module with a fault; the procedure operates with
-common events only. Before entering the procedure projections of the faulty
+common events only. Before entering the procedure the projections of the faulty
 module's sublanguages, $F_i, N_i$ are computed at the step \ref{alg:fcf_Fi}.
+Note, that projection operation preserves faulty and non-faulty information.
 
 The recursive procedure computes all projections $F_j, N_j$ of the adjacent
 modules for a given module $k$ (we say that two modules are adjacent to each
@@ -822,21 +826,14 @@ for each module at the step \ref{alg:fcf_final}.
 
 	\ForAll{$j \in I$}
 	\label{alg:fco_init}
-		\State $D_{j,f} \leftarrow
-			P_{\Sigma_j \rightarrow \Sigma_{j,o} \cup 
-			\bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}(L_{j,f})$
-		\State $D_{j,nf} \leftarrow
-			P_{\Sigma_j \rightarrow \Sigma_{j,o} \cup 
-			\bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}(L_{j,nf})$
+		\State $D_{j,f} \leftarrow P_{j,co}(L_{j,f})$
+		\State $D_{j,nf} \leftarrow P_{j,co}(L_{j,nf})$
 	\EndFor
 	
 	\Procedure{propagate-d}{$k$, $D_{k,f}$, $D_{k,nf}$}
-		\ForAll{$j \in I \mid j \textrm{ is adjacent to } k$}
+		\ForAll{$j \in I \mid \Sigma_j \cap \Sigma_k \neq \emptyset$}
 			\State $D'_{j,f} \leftarrow 
-			P_{\Sigma_j \cup \Sigma_k \rightarrow \Sigma_j \cup \Sigma_o}
-			(P_{\Sigma_j \cup \Sigma_k \rightarrow \Sigma_j}^{-1}(F_j) 
-			\cap 
-			P_{\Sigma_j \cup \Sigma_k \rightarrow \Sigma_k}^{-1}(D_{k,f}))$
+			P_{j,co}(F_j \parallel D_{k,f})$
 			\If{$(D'_{j,f}\backslash D_{j,f} \neq \emptyset) \lor
 				(D'_{j,nf}\backslash D_{j,nf} \neq \emptyset)$}
 				\State $D_{j,f}\leftarrow D'_{j,f}$
@@ -848,25 +845,9 @@ for each module at the step \ref{alg:fcf_final}.
 	
 	\State \textproc{propagate-d}($k$, $D_{k,f}$, $D_{k,nf}$)
 	\label{alg:fco_enter_recursion}
-	\State$
+	\State $L_{i,f}^{ext} \leftarrow P_{i,co}(L_{i,f} \parallel D_{i,f})$
 	\label{alg:fco_finalize}
-	\begin{array}{ll}
-	L_{i,f}^{ext} \leftarrow 
-	P_{\Sigma_i \rightarrow \Sigma_i \cup \Sigma_o} ( &  
-	P_{\Sigma_i \cup \Sigma_o \rightarrow \Sigma_i}^{-1}(L_{i,f}) \cap \\ 
-	& 
-	P_{\Sigma_i \cup \Sigma_o \rightarrow \Sigma_i}^{-1}(D_{i,f}))
-	\end{array}
-	$
-	\State$
-	\begin{array}{ll}
-	L_{i,nf}^{ext} \leftarrow 
-	P_{\Sigma_i \rightarrow \Sigma_i \cup \Sigma_o} ( &  
-	P_{\Sigma_i \cup \Sigma_o \rightarrow \Sigma_i}^{-1}(L_{i,nf}) \cap \\ 
-	& 
-	P_{\Sigma_i \cup \Sigma_o \rightarrow \Sigma_i}^{-1}(D_{i,nf}))
-	\end{array}
-	$
+	\State $L_{i,nf}^{ext} \leftarrow P_{i,co}(L_{i,nf} \parallel D_{i,nf})$
 	\\
 	\Return $L_{i,f}^{ext}, L_{i,nf}^{ext}$
 \end{algorithmic}
