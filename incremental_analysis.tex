@@ -228,9 +228,6 @@ erases unobservable events.
 % ; $\epsilon$ means the empty string. 
 The correspondent inverse projection is $M^{-1}: \Sigma_o^* \rightarrow
 2^{\Sigma^*}$.
-If a set of events is partitioned into subsets, $\Sigma := \bigcup_i
-\Sigma_{i} \mid i \in \mathbb{N}$, the natural projection over the partition
-members is denoted as $M_i: \Sigma_i^* \rightarrow \Sigma_{i,o}^*$.
 
 Let $I := \{1,2,\ldots,n\} \subset  \mathbb{N}$ be an index set. A system is
 defined by a set of automata $\{G_{i \in I}\}$ and a correspondent set of
@@ -243,6 +240,10 @@ The natural projection is commonly defined over Kleene closure on event sets.
 We restrict it, for simplicity of notation, to the system's languages as
 follows: $P_i(L) := \{s\mid s\in L_{i}\}$, and 
 $P_i^{-1}(L_{i}) := \{s \mid s \in L, P_i(s) \in L_i\}, ~i \in I$.
+We also define natural projection over observable events for the index set as
+follows: $M_i :\Sigma_i^* \rightarrow \Sigma_{i,o}^*$, and 
+natural projection over common events: 
+$P_{i,c} : \Sigma_i \rightarrow \Sigma_i \cap \bigcup_{j\neq i}^I\Sigma_j$.
 
 
 % \subsection{Adjacency graph}
@@ -316,11 +317,7 @@ consistent, before checking diagnosability of the system.
 First, we recall definition of diagnosability of virtual modules, introduced in
 \cite{myadzelets_virtual_2013}.
 Let $J$ be a partition of $I$. Given a set of system's languages $\{L_{i \in
-I}\}$ and a set of observable projections $\{M_j := \Sigma_j^* \rightarrow
-\Sigma_{j,o}^* \mid j \in J \}$
-where $\Sigma_j := \bigcup_i \Sigma_i,~ 
-	\Sigma_{j,o} := \bigcup_i \Sigma_{i,o} \mid 
-	i\in j$. 
+I}\}$ and a set of observable projections $\{M_j \mid j \in J \}$. 
 The system is modularly diagnosable with respect to $J$ and $\{M_j\}$ 
 if the following holds:
 \begin{equation}
@@ -729,25 +726,16 @@ all the modules}
 	\ForAll{$j \in I$}
 	\label{alg:fcf_init}
 		\Comment{Initialization}
-		\State $C_j \leftarrow 
-			P_{\Sigma_j \rightarrow \bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}(L_j)$
+		\State $\Sigma_{j,c} \leftarrow \Sigma_j \cap \bigcup_{i\neq j}^I\Sigma_i$
+		\State $C_j \leftarrow P_{j,c}(L_j)$
 		\State $F_j \leftarrow \emptyset, N_j \leftarrow \emptyset$
-		\State $\Sigma_{j,c} \leftarrow \{\sigma \in s \mid s \in C_j\}$
 	\EndFor
 	\Procedure{propagate-fn}{$k$, $F_k$, $N_k$}
-		\ForAll{$j \in I \mid j\neq i, j \textrm{ is adjacent to } k,
+		\ForAll{$j \in I \mid j\neq i, \Sigma_j \cap \Sigma_k \neq \emptyset,
 				\Sigma_{j,c}\neq \emptyset$} 
-			\State $F'_j \leftarrow (
-			P_{\Sigma_j \rightarrow \Sigma_j \cap \Sigma_k}^{-1}(F_k)
-			\cap 
-			P_{\Sigma_j \rightarrow \Sigma_j \cap \Sigma_k}^{-1}(C_j) 
-			)\cap C_j$
+			\State $F'_j \leftarrow P_{j,c}(F_k \parallel C_j)$
 			\label{alg:fcf_partial_begin}
-			\State $N'_j \leftarrow (
-			P_{\Sigma_j \rightarrow \Sigma_j \cap \Sigma_k}^{-1}(N_k)
-			\cap 
-			P_{\Sigma_j \rightarrow \Sigma_j \cap \Sigma_k}^{-1}(C_j) 
-			)\cap C_j$ 
+			\State $N'_j \leftarrow P_{j,c}(N_k \parallel C_j)$ 
 			\State $K \leftarrow \overline{F'_j \cap N'_j}$
 			\State $F'_j \leftarrow F'_j \backslash K$
 			\State $N'_j \leftarrow N'_j \backslash K$
@@ -769,20 +757,16 @@ all the modules}
 		\EndFor
 	\EndProcedure
 	
-	\State $F_i \leftarrow 
+	\State $F_i \leftarrow P_{i,c}(L_{i,f})$
 		\label{alg:fcf_Fi}
-		P_{\Sigma_i \rightarrow \bigcup_{j\neq i}^I \Sigma_i\cap \Sigma_j}(L_{i,f})$
-	\State $N_i \leftarrow 
-		P_{\Sigma_i \rightarrow \bigcup_{j\neq i}^I \Sigma_i\cap \Sigma_j}(L_{i,nf})$
+	\State $N_i \leftarrow P_{i,c}(L_{i,nf})$
 	\State \textproc{co-languages}($i$, $F_i$, $N_i$)
 	\Comment{Beginning of recursion}	
 	\ForAll{$j \in I \mid j \neq i$}
 		\Comment{Finalization}
 		\label{alg:fcf_final}
-		\State $L_{j,cf} \leftarrow L_j \cap 
-		P_{\Sigma_j \rightarrow \bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}^{-1}(F_j)$
-		\State $L_{j,cnf} \leftarrow L_j \cap 
-		P_{\Sigma_j \rightarrow \bigcup_{i\neq j}^I \Sigma_i\cap \Sigma_j}^{-1}(N_j)$
+		\State $L_{j,cf} \leftarrow L_j \cap P_{j,c}^{-1}(F_j)$
+		\State $L_{j,cnf} \leftarrow L_j \cap P_{j,c}^{-1}(N_j)$
 	\EndFor
 	\\
 	\Return $\{L_{j,cf}\}$, $\{L_{j,cnf}\}$
