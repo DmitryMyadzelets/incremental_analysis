@@ -60,9 +60,9 @@ Achieving Modular Diagnosability. General Form of the Approach}
 
 \begin{abstract} In this paper, we investigate a problem of enforcing modular
 diagnosability property of a system. We consider that a subset of the natural
-modules may be viewed as one virtual module, and the system with such new
-modularity becomes modular diagnosable. We introduce a formal definition of the
-problem, and a structural analysis of a system that allows us to find which
+system's modules may be viewed as one virtual module, and the system with such
+new modularity becomes modular diagnosable. We introduce a formal definition of
+the problem, and a structural analysis of a system that allows us to find which
 modules can be considered as candidates for the virtual module. The analysis
 doesn't require construction of the global system's model. Algorithms and an
 example are presented.
@@ -131,7 +131,7 @@ diagnosers' sizes.
 In our approach, given a system with an initial natural modularity, we search
 for a point, when the system is modular diagnosable. If the system is diagnosable,
 then this point can always be found. The modules correspondent to that
-modularity we call \emph{virtual}, since they are not composed in reality, and
+modularity we call \emph{virtual}, since they differ from natural modules and
 used only to build diagnosers.
 
 \begin{figure}
@@ -166,8 +166,8 @@ used only to build diagnosers.
 	node[black, right] {Events exchange rate};
 
 \end{tikzpicture}
-\caption{Changing of size of modules, diagnosers, and events exchange rate
-with respect to the number of modules in the same system}
+\caption{Size of modules, diagnosers, and events exchange rate, changing 
+with respect to the degree of modularity of the system}
 \label{fig:curves}
 \end{figure}
 
@@ -223,7 +223,7 @@ Some events of DES can not be observed. To reflect that the set of events
 $\Sigma$ is partitioned into disjointed sets of observable events $\Sigma_o$ and
 not observable events $\Sigma_{ou}$, i.e. $\Sigma = \Sigma_o~\dot{\cup}~
 \Sigma_{ou}$.
-The $M: \Sigma^* \rightarrow \Sigma_o^*$ denotes the natural projection that
+$M: \Sigma^* \rightarrow \Sigma_o^*$ denotes natural projection that
 erases unobservable events.
 % ; $\epsilon$ means the empty string. 
 The correspondent inverse projection is $M^{-1}: \Sigma_o^* \rightarrow
@@ -236,17 +236,19 @@ automata and languages from these sets. The \emph{global} language of the system
 is defined by the parallel composition \cite{cassandras_introduction_2010} of
 its local languages:
 $L := \parallel_{i \in I} L_i$.
-The natural projection is defined over Kleene closure on event sets:
-$\Sigma^* \rightarrow \Sigma_i^*$. We extend it to the system's languages as
-follows: $P_i(L) := \{s\mid s\in L_{i}\}$, and 
+The natural projection for the local languages is defined as 
+$P_i := \Sigma^* \rightarrow \Sigma_i^*$. We extend it to the system's languages
+as follows: $P_i(L) := \{s\mid s\in L_{i}\}$, and 
 $P_i^{-1}(L_{i}) := \{s \mid s \in L, P_i(s) \in L_i\}, ~i \in I$.
 We also define natural projection over observable events for the index set: 
-$M_i :\Sigma_i^* \rightarrow \Sigma_{i,o}^*$,natural projection over common
+$M_i :\Sigma_i^* \rightarrow \Sigma_{i,o}^*$, natural projection over common
 events:
 $P_{i,c} : \Sigma_i^* \rightarrow (\Sigma_i \cap \bigcup_{j\neq
 i}^I\Sigma_j)^*$, and natural projection over observable and common events:
 $P_{i,co} : (\Sigma_i \cup \Sigma_o)^* \rightarrow (\Sigma_{o} \cup (\Sigma_i
-\cap \bigcup_{j\neq i}^I\Sigma_j))^*$
+\cap \bigcup_{j\neq i}^I\Sigma_j))^*$. All the above projections, as well as
+the correspondent inverse projections, are defined also for languages in the
+usual manner.
 
 
 % \subsection{Adjacency graph}
@@ -312,12 +314,12 @@ $(\forall i \in I)\left[ L_i = P_i(L)\right]$. The motivation for this
 assumption is following. Most of real-life complex systems are of high
 modularity, where each module is presented as a small model along with
 correspondent faults as, for example, in \cite{sartini_methodology_2010}. When
-properly designed, such systems have neither deadlocks no trajectories in models
-which never executed. Such assumption also may require construction of a
+properly designed, such systems have neither deadlocks nor trajectories which
+never executed. In practice, such assumption may require construction of a
 supervisor, and verification that a local language of each module is globally
 consistent, before checking diagnosability of the system.
 
-First, we recall definition of diagnosability of virtual modules, introduced in
+First, we recall definition of diagnosability by virtual modules, introduced in
 \cite{myadzelets_virtual_2013}.
 Let $J$ be a partition of $I$. Given a set of system's languages $\{L_{i \in
 I}\}$ and a set of observable projections $\{M_j \mid j \in J \}$. 
@@ -342,7 +344,7 @@ $j$.
 
 Second, we recall Lemma 2 \cite{myadzelets_virtual_2013}, where the statements
 hold for a system of two languages, and rewrite it for an arbitrary couple
-of languages for any system, as follows.
+of languages as follows.
 
 \begin{lemma}
 \label{lem:distinguished}
@@ -813,15 +815,14 @@ for each module at the step \ref{alg:fcf_final}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Construction of the virtual module}
-
+\subsection{Construction of  virtual module}
 
 \begin{algorithm} 
 \caption{Computing observable information for the faulty module} 
 \begin{algorithmic}[1]
-	\Require The index  $i \in I$ of the faulty module, 
-	$k \in I \mid M(L_{k,cf}) \neq \emptyset \lor M(L_{k,cnf}) \neq
-	\emptyset, k \neq i$, the sets $\{L_{j,cf}\}, \{L_{j,cnf}\}, j \in I$.
+	\Require The index  $i \in I$ of the faulty module, the index of a module with
+	observable support $k \in I \mid M(L_{k,cf}) \neq \emptyset \lor M(L_{k,cnf})
+	\neq \emptyset, k \neq i$, the sets $\{L_{j,cf}\}, \{L_{j,cnf}\}, j \in I$.
 % 	\State $V \leftarrow \{i\}$ \Comment{Virtual module}
 
 	\ForAll{$j \in I$}
@@ -929,8 +930,9 @@ diagnosable by minimal number of virtual modules:
  $k$ from $J$ if $k=\emptyset$.
 \end{enumerate} 
 The order the observable supports are verified in the procedure guaranties that
-we consider, firstly, the languages which themselves contain the faulty
-sublanguages, thus maximizing the number of virtual modules in the system.
+we consider the languages which themselves contain the faulty
+sublanguages at first, thus maximizing the number of virtual modules in the
+system.
 
 It worth to note that the above algorithm can be augmented by additional
 criteria aimed, for instance, to decrease computational burden.
@@ -1365,8 +1367,20 @@ from the observation of $L_{1,nf}$ which is $\{o_1\}$}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusions}
+\section{Conclusions} 
 \label{sec:Conclusions}
+We investigated how to enforce property of modular diagnosability for a
+discrete-event system which is not modular diagnosable with its natural
+modularity. We presented a generalized approach where we achieve modular
+diagnosability by partitioning the set of modules such that each member of the
+partition is considered as a virtual module, and the system is modular
+diagnosable with respect to this new modularity. Since the number of partitions
+is equal to the Bell number, which has a double exponential generating function,
+enumerating all partitions is an intractable problem. Our approach, instead,
+uses two recursive procedures with, in the worst case, exponential time
+complexity, and linear state complexity with respect to the number of modules.
+We suggested an criteria how to maximize the modularity of the system, and a
+correspondent algorithm.
 
 
 \bibliographystyle{IEEEtran}
