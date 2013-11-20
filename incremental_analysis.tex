@@ -2,13 +2,13 @@
 % Submission to: http://wodes2014.lurpa.ens-cachan.fr/
 % 
 % \documentclass[a4paper,oneside]{article}
-\documentclass[a4paper, 10pt, conference]{ieeeconf}
-\IEEEoverridecommandlockouts
+\documentclass{ifacconf}
+% \IEEEoverridecommandlockouts
  % This command is only
   % needed if you want
   % to use the \thanks
   % command
-\overrideIEEEmargins
+% \overrideIEEEmargins
 % See the \addtolength command later in the file to balance the column lengths
 % on the last page of the document
 
@@ -16,6 +16,8 @@
 Systems}, pdfauthor={Dmitry Myadzelets}, bookmarks=false,
 % colorlinks=true, linkcolor=black
 ]{hyperref}
+
+\usepackage{natbib}            % you should have natbib.sty for IFAC
 
 \usepackage{amsfonts, amssymb, amsmath} 
 \usepackage{graphicx}
@@ -26,58 +28,76 @@ Systems}, pdfauthor={Dmitry Myadzelets}, bookmarks=false,
 \usepackage{algpseudocode}
 
 \usepackage{float}
-\newfloat{algorithm}{t}{lop}
-\floatname{algorithm}{Algorithm}
+\newfloat{alg}{t}{lop}
+\floatname{alg}{Algorithm}
 
 \begin{document}
 
+\begin{frontmatter}
+
 \title{Virtual Modules in Discrete-Event Systems: 
-Achieving Modular Diagnosability. General Form of the Approach}
-\author{
-	Dmitry Myadzelets$^{*,1,2}$, Andrea Paoli$^{1,3}$
-% 	-- \today
-	\thanks{$^{1}$Center for Research on Complex Automated Systems (CASY), DEI,
-	University of Bologna, Viale Pepoli 3/2, 40123, Bologna, Italy}
-		\thanks{$^{2}$E-mail: {dmitry.myadzelets@gmail.com}}
-		\thanks{$^{3}$E-mail: {andrea.paoli@unibo.it}}
-}
-\maketitle
+Achieving Modular Diagnosability. \\ General Form of the Approach}
+\author[First]{Dmitry Myadzelets} 
+\author[Second]{Andrea Paoli}
+
+\thanks[footnoteinfo]{This work was supported by the Erasmus Mundus Action 2
+programme of the European Union}
+
+\address[First]{Center for Research on Complex Automated Systems (CASY), DEI,
+University of Bologna, Viale Pepoli 3/2, 40123, Bologna, Italy (e-mail:
+dmitry.myadzelets@gmail.com)}
+\address[Second]{CASY, DEI, University of Bologna (e-mail:
+andrea.paoli@unibo.it)}
+ 
+
+% \author{
+% 	Dmitry Myadzelets$^{*,1,2}$, Andrea Paoli$^{1,3}$
+% % 	-- \today
+% 	\thanks{$^{1}$Center for Research on Complex Automated Systems (CASY), DEI,
+% 	University of Bologna, Viale Pepoli 3/2, 40123, Bologna, Italy}
+% 		\thanks{$^{2}$E-mail: {dmitry.myadzelets@gmail.com}}
+% 		\thanks{$^{3}$E-mail: {andrea.paoli@unibo.it}}
+% }
+% \maketitle
 
 % To meet requirements of EU funding
 % http://eacea.ec.europa.eu/about/eacea_logos_en.php "This project has been
 % funded with support from the European Commission. This publication reflects
 % the views only of the author, and the Commission cannot be held responsible
 % for any use which may be made of the information contained therein."
-\begin{figure}[!b]
-\begin{tabular}{l p{60mm}}
- 	\includegraphics[height=10mm]{EU_flag.eps}
- 	& \vspace{-10mm} \footnotesize
- 	$^{*}$With the support of the Erasmus Mundus Action 2 programme of the
- 	European Union.
-\end{tabular}
-\end{figure}
+% \begin{figure}[!b]
+% \begin{tabular}{l p{60mm}}
+%  	\includegraphics[height=10mm]{EU_flag.eps}
+%  	& \vspace{-10mm} \footnotesize
+%  	$^{*}$With the support of the Erasmus Mundus Action 2 programme of the
+%  	European Union.
+% \end{tabular}
+% \end{figure}
 
 \begin{abstract} In this paper, we investigate a problem of enforcing modular
-diagnosability property of a system. We consider that a subset of the natural
-system's modules may be viewed as one virtual module, and the system with such
-new modularity becomes modular diagnosable. We introduce a formal definition of
-the problem, and a structural analysis of a system that allows us to find which
-modules can be considered as candidates for the virtual module. The analysis
-doesn't require construction of the global system's model. Algorithms and an
-example are presented.
+diagnosability property of a system. We consider that a subset of the modules of
+a system with natural modularity may be viewed as one virtual module, and the
+system with such new modularity becomes modular diagnosable. We introduce a
+formal definition of the problem, and a structural analysis of the system that
+allows us to find which modules can be considered as candidates for the virtual
+module. The analysis doesn't require construction of the global system's model.
+Algorithms and an example are presented.
 \end{abstract}
 
-\begin{keywords}
-Discrete Event Systems, Modular Structure, Distributed Diagnosability
-\end{keywords}
+\end{frontmatter}
 
-\newtheorem{theorem}{Theorem}
-\newtheorem{definition}{Definition}
-\newtheorem{lemma}{Lemma}
-\newtheorem{assumption}{Assumption}
-\newtheorem{corollary}{Corollary}
-\newtheorem{example}{Example}
-% \newtheorem{algorithm}{Algorithm}
+
+% \begin{keywords}
+% Discrete Event Systems, Modular Structure, Distributed Diagnosability
+% \end{keywords}
+
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{defn}{defn}
+% \newtheorem{lem}{lem}
+% \newtheorem{assumption}{Assumption}
+% \newtheorem{corollary}{Corollary}
+% \newtheorem{example}{Example}
+% \newtheorem{alg}{alg}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,7 +106,7 @@ Discrete Event Systems, Modular Structure, Distributed Diagnosability
 In Discrete-Event Systems, diagnosis of a fault is a problem of deciding whether
 or not the fault occurred, under partial observation of the system's events.
 The problem was defined in \cite{sampath_diagnosability_1995} where the authors
-consider a monolithic model of the system. This definition and new definitions
+consider a monolithic model of a system. This definition and new definitions
 of diagnosability problem, emerged later, may be grouped as, for example, in
 \cite{su_global_2005}, where an approach can be centralized as in
 \cite{sampath_diagnosability_1995}, \cite{jiang_polynomial_2001} and
@@ -99,22 +119,22 @@ model. This process corresponds with exponential growth of the model's state
 space, which makes the diagnosability problem intractable for complex large
 systems with high modularity.
 
-Distributed approach does not require to built the entire model of
-the system. It implies that the system has a set of observation spots
-(diagnosers), each observing only a part of the system (composed of a subset of
-modules). Diagnosers can communicate to each other in order to decide if a fault
-occurred. In general, the bigger the observation spots for the same
+Distributed approach does not require to built an entire model of
+the system. The approach implies that the system has a set of observation spots,
+carrying diagnosability information (diagnosers), each observing only a part of
+the system (a subset of the modules, composed). Diagnosers can communicate to
+each other in order to decide if a fault occurred. In general, the bigger the observation spots for the same
 system, the less communications among the spots is required.
-Figure \ref{fig:curves} shows that the average size of a module grows while the
-system's modules are composed together (we imply that each module is represented
+Figure \ref{fig:curves} shows that the average size of a composed module grows
+while the system's modules are composed together (we imply that each module is represented
 by automata, and the size of a module is reflected by the number of states of
-the correspondent automaton).
-A shape of this curve depends mostly on the order the modules are taken for the
-composition, but the initial point, when the system has maximal modularity, and
-the final point, when all the modules are composed into one monolithic module,
-remain the same. Assuming that the system is diagnosable, the average size of a
-diagnoser grows much faster, since it is exponential with respect to the average
-size of a module, in the worst case.
+a correspondent automaton).
+The shape of this curve depends mostly on the order the modules are taken for
+the composition, but the initial point, when the system has maximal modularity,
+and the final point, when all the modules are composed into one monolithic
+model, remain the same. Assuming that the system is diagnosable, the average
+size of a diagnoser grows much faster, since it is exponential with respect to
+the average size of a module, in the worst case.
 The amount of events the diagnosers have to exchange among each other, in order
 to decide if a fault occurred, is decreasing. The reason the diagnosers require
 less event for decision making is due to the fact that they become more
@@ -122,10 +142,10 @@ self-sufficient, since amount of observable events available for each
 diagnoser without communications is growing. Thus, the events exchange rate
 decreases down to the point where no communications is required to make a
 decision about the faults occurrence. That is the point when the system becomes
-modular diagnosable (notion of modular diagnosability was introduced in
+modular diagnosable (the notion of modular diagnosability was introduced in
 \cite{contant_diagnosability_2006}). The following composition of the modules
 does not affect diagnosability, and leads only to the growth of the modules' and
-diagnosers' sizes. 
+diagnosers' sizes.
 
 In our approach, given a system with an initial natural modularity, we search
 for a point, when the system is modular diagnosable. If the system is diagnosable,
@@ -256,16 +276,16 @@ usual manner.
 % abstraction is often implicitly or explicitly used in approaches devoted to
 % diagnosability of modular systems. In our approach we denote such graph as the
 % \emph{adjacency graph}, formally defined as follows:
-% \begin{definition}
+% \begin{defn}
 % \label{def:graph_events}
 % Given $\{\Sigma_i \mid i \in I \}$, let $\mathcal{G} = \left<I, E\right>$ be an
 % undirected adjacency graph where $E \subseteq I \times
 % I$ such that 
 % $$(\forall i, j \in I)(i, j) \in E \Leftrightarrow 
 % 	\Sigma_i \cap \Sigma_j \neq \emptyset \mid i \neq j.$$
-% \end{definition}
+% \end{defn}
 % We extend this definition over languages.
-% \begin{definition}
+% \begin{defn}
 % \label{def:graph_languages}
 % The adjacency graph over a set of languages $\{L_i \subseteq \Sigma_i^* \mid i
 % \in I \}$ is a graph $\mathcal{G} = \left<I, E\right>$ where $E \subseteq I \times
@@ -277,7 +297,7 @@ usual manner.
 % $P_{i,j} : (\Sigma_i \cup \Sigma_j)^* \rightarrow (\Sigma_i \cap \Sigma_j)^*$
 % , and  
 % $P_{i,j}^{-1}(s) := \{t \in (\Sigma_i \cup \Sigma_j)^* \mid P_{i,j}(t) = s\}$.
-% \end{definition}
+% \end{defn}
 % 
 % By definition, the adjacency graph over $\{\Sigma_i\}$ is a supergraph for any
 % graph over $\{L_i \subseteq \Sigma_i\}$, and any adjacency graph over $\{L'_i
@@ -305,16 +325,17 @@ usual manner.
 % such approach is given below.
 
 The setup for the problem is following. Let a system be defined as a set of
-local languages $S := \{L_{i\in I}\}$, and let faulty behaviour be defined for
-any $i \in I$, i.e. each language $L_i$ can be disjoint into faulty and
-non-faulty sublanguages: $L_{i,f}$ and $L_{i,nf}$. For the sake of simplicity,
-we assume that a language may have only one type of fault. We assume that
-$(\forall i \in I)\left[ L_i = P_i(L)\right]$. The motivation for this
-assumption is following. Most of real-life complex systems are of high
-modularity, where each module is presented as a small model along with
-correspondent faults as, for example, in \cite{sartini_methodology_2010}. When
-properly designed, such systems have neither deadlocks nor trajectories which
-never executed. In practice, such assumption may require construction of a
+local languages $\{L_{i\in I}\}$, and let a faulty behaviour be defined for any
+$i \in I$, i.e. each language $L_i$ can be disjoint into faulty and non-faulty
+sublanguages: $L_{i,f}$ and $L_{i,nf}$. We assume that a faulty behaviour is
+defined in a \emph{specification-based}, rather then \emph{event-based}, way.
+For the sake of simplicity, we assume that a language may have only one type of
+fault. We assume that $(\forall i \in I)\left[ L_i = P_i(L)\right]$. The
+motivation for this assumption is following. Most of real-life complex systems
+are of high modularity, where each module is presented as a small model along
+with correspondent faults as, for example, in \cite{sartini_methodology_2010}.
+When properly designed, such systems have neither deadlocks nor trajectories
+which never executed. In practice, such assumption may require construction of a
 supervisor, and verification that a local language of each module is globally
 consistent, before checking diagnosability of the system.
 
@@ -345,14 +366,14 @@ Second, we recall Lemma 2 \cite{myadzelets_virtual_2013}, where the statements
 hold for a system of two languages, and rewrite it for an arbitrary couple
 of languages as follows.
 
-\begin{lemma}
+\begin{lem}
 \label{lem:distinguished}
 Given a tuple $\left< L_i, L_j, s, u\right> \mid i, j \in \mathbb{N}, i\neq j$
 and $s, u \in L_i$. The strings $s, u$ are
 distinguished in the language $L_i \parallel L_j$ if for the string $s$ exists
 an adjacent observable support $K_j \subseteq L_j$ which satisfies the
 condition:
-\end{lemma} 
+\end{lem} 
 \begin{equation}
 \label{con:distinquished}
 	\begin{array}{l}
@@ -367,19 +388,19 @@ condition:
 % where $M'_j: (\Sigma_i \cup \Sigma_j)^* \rightarrow (\Sigma_{j,o}\backslash
 % \Sigma_i)^*$.
 Informally, the lemma imposes a requirement for the string $s$ to have an
-observable support (subset of observable strings ending with common events) in
-another language, which guaranties that we can observe some events in that
+\emph{observable support} (subset of observable strings ending with common
+events) in another language, which guaranties that we can observe some events in that
 language before any continuation of the string $s$.
 Then, the lemma defines a condition which allows us to distinguish these
 observations from the observation of the string $u$.
 
 Now, we rewrite Lemma 3 \cite{myadzelets_virtual_2013}, in the context of our
 setup, as follows:
-\begin{lemma}
+\begin{lem}
 \label{lem:virtual_module_is_diagnosable}
 Given a virtual module $j \in J$, the module is diagnosable with respect to
 $M_j$ if:
-\end{lemma}
+\end{lem}
 \begin{equation}
 	\begin{array}{l}
 % 		(\forall i \in j, s \in L_{i,f}, t \in L_i \backslash \overline{L_{i,f}})
@@ -403,8 +424,9 @@ all faulty strings from all non-faulty strings.
 % Note, that exclusion of the prefixes comes from fact that the non-compositional
 % analysis is used.
 From the lemma it can be seen that for one faulty sublanguage there can be a
-subset of languages with observable supports, satisfying the conditions. In
-order to make the system modularly diagnosable, thus, one needs to find a
+subset of languages with observable supports (a few $k\in j$), satisfying the
+conditions.
+In order to make the system modularly diagnosable, thus, one needs to find a
 relevant partition, with a desired distribution of modules over the partition.
 It worth to note, that the partitioning implies that languages with faults are
 in subsets with the languages which have observable events. Thus, other
@@ -412,7 +434,7 @@ languages which have no faults and have no observable events, as well the
 languages with observations which have no effect for the diagnosability
 property, will be in other subsets.
 
-One faulty module also may require a few modules with observable supports.
+One faulty module may require a few modules with observable supports.
 The algorithms presented in the following section are aimed to find such subset
 of system's modules. The first algorithm may be viewed as a \emph{forward
 propagation} procedure. It starts from the faulty module, and propagates faulty
@@ -428,24 +450,25 @@ requirements.
 \section{Algorithms for diagnosability by virtual modules}
 \label{sec:algorithms}
 
-Assume that given a language with a faulty behaviour and a language which has an
-observable support. It is required to verify if the observable support is
-either for the faulty or non-faulty sublanguages. If it is true, then the
+Assume that a language with a faulty behaviour and a language which has an
+observable support are given. Then, it's required to verify if the observable
+support is either for the faulty or non-faulty sublanguages. If it is true, then the
 correspondent modules can be composed into a virtual module.
 According to the Lemma \ref{lem:virtual_module_is_diagnosable}, in order to
 decide if the virtual module is diagnosable we need to verify the necessary
 conditions for all the strings $P_i^{-1}(L_{i,f})$ and $P_i^{-1}(L_{i,nf})$,
-projected to the local languages of other modules. Those local projections are
-the basic elements our algorithms operate with. In the sequel we
+projected to the local languages of other modules $\{j \in I\mid j \neq i\}$.
+Those local projections are the basic elements our algorithms operate with. In the sequel we
 refer to the correspondent local sublanguages as to \emph{co-faulty} and
 \emph{co-non-faulty} ones. A formal definition of these sublanguages is
 presented below, and then an algorithm which computes the co-faulty
-and co-non-faulty sublanguages for all the system's modules, is given. It is
-followed by algorithms which verify diagnosability and find a virtual module.
+and co-non-faulty sublanguages for all the system's modules, is given. 
+% It is
+% followed by algorithms which verify diagnosability and find a virtual module.
 
 \subsection{Co-faulty and co-non-faulty sublanguages}
 
-\begin{definition}
+\begin{defn}
 \label{def:co-faulty}
 Given $i, j \in I$, $L_{i,f} \subseteq L_i$,
 we say that a sublanguage $L_{j,cf} \subseteq L_j$ is \emph{co-faulty} with
@@ -464,7 +487,7 @@ $$
 		t \not \in L_{i,f} \land t \in L_{i,nf}   
 	\right].
 $$ 
-\end{definition}
+\end{defn}
 
 In words, the co-faulty sublanguage is a sublanguage which satisfies two
 conditions:
@@ -475,17 +498,17 @@ conditions:
 a) it is the sublanguage of projection of the global non-faulty language
 to the local language; b) the sublanguage is not co-faulty.
 
-% \begin{lemma}
+% \begin{lem}
 % \label{lem:empty_co_if_no_common}  
 % Given a language $L_j\mid j \in I$, its co-faulty and
 % co-non-faulty sublanguages are empty, if the language has no common events in
 % its strings, i.e
 % $$P_{\Sigma_j \rightarrow \bigcap_{i\neq j}^I \Sigma_i}(L_i) = \emptyset.$$
-% \end{lemma}
+% \end{lem}
 % We skip the proof due to its triviality. 
 
 Given global faulty and non-faulty sublanguages, one can compute the local
-co-faulty sublanguage as follows:
+co-faulty sublanguage, using the global language, as follows:
 \begin{equation}
 \label{eq:co-faulty_from_global}
 	\begin{array}{l}
@@ -493,9 +516,8 @@ co-faulty sublanguage as follows:
 		L_{j,cnf} := P_j(L_{nf}) \backslash P_j(L_{f}).	
 	\end{array}
 \end{equation}
-However, we are interested to compute a local co-faulty
-language without computing the global language. Since the global
-faulty sublanguage is define as
+However, we are interested to compute local sub languages without computing the
+global language. Since the global faulty sublanguage is define as
 \begin{equation}
 \label{eq:co-faulty_from_locals}
 	L_f := P_i^{-1}(L_{i,f}) \cap \bigcap_{k\neq
@@ -561,7 +583,7 @@ We skip the definition of co-non-faulty sublanguage here due to its similarity.
 % 
 % 
 % 
-% \begin{lemma}
+% \begin{lem}
 % \label{lem:co-faulty-if-path}
 % Given a set of languages $\{L_i \subseteq \Sigma_i^* \mid i \in I \}$ and the 
 % adjacency graph $\mathcal{G}$ over this set. Any two vertexes $i, j \in I$,
@@ -574,7 +596,7 @@ We skip the definition of co-non-faulty sublanguage here due to its similarity.
 % \subseteq I, j \neq i\}$ where $L_{j,cf}$ is co-faulty with respect to $L_{i,f}$. 
 % For any $j \in J$ the $L_{j,cf}$ is not empty only if exists a path between $i$
 % and $j$ in the adjacency graph $\mathcal{G}$ over languages.
-% \end{lemma}
+% \end{lem}
 
 % \begin{proof} 
 % Trivially, by induction from the definition of parallel composition of automata
@@ -587,7 +609,7 @@ We skip the definition of co-non-faulty sublanguage here due to its similarity.
 % % inverse projections (parallel composition).
 % \end{proof}
 
-% \begin{algorithm} Computing the co-faulty and co-non-faulty languages of an
+% \begin{alg} Computing the co-faulty and co-non-faulty languages of an
 % adjacent module.
 % \label{alg:partial_co_faulty}
 % \begin{algorithmic}[1]
@@ -613,7 +635,7 @@ We skip the definition of co-non-faulty sublanguage here due to its similarity.
 % 	\\
 % 	\Return $L_{j,cf}, L_{j,cnf}$
 % \end{algorithmic}
-% \end{algorithm}
+% \end{alg}
 % 
 % At the steps \ref{alg:pcf_get_common_f} and \ref{alg:pcf_get_common_n} of the
 % above algorithm we compute projections of known faulty and non-faulty languages.
@@ -720,7 +742,7 @@ We skip the definition of co-non-faulty sublanguage here due to its similarity.
 % % are processed separately first, and then the goal module is processed with all
 % % of them. << Too BIG complexity difference. Check it twice!
 
-\begin{algorithm}
+\begin{alg}
 \caption{Computing all co-faulty and co-non-faulty languages of
 all the modules}
 \begin{algorithmic}[1]
@@ -775,47 +797,50 @@ all the modules}
 	\Return $\{L_{j,cf}\}$, $\{L_{j,cnf}\}$
 \end{algorithmic}
 \label{alg:propagate_fn}
-\end{algorithm}
+\end{alg}
 
-Now, we present Algorithm \ref{alg:propagate_fn} which, given a module with the co-faulty
-sublanguage defined, computes the co-faulty and co-non-faulty languages for all
-the rest modules of the system.
+Now, we present Algorithm \ref{alg:propagate_fn} which, given a module with a
+faulty behaviour defined, computes the co-faulty and co-non-faulty languages for
+all the rest modules of the system.
 The algorithm starts from a preliminary step at line \ref{alg:fcf_init}.
 At this step a projection to the common events $C_j$ is computed for all the
-local languages. Projections of co-faulty and co-non-faulty sublanguages and
-to the common events, denoted as $F_j, N_j$, are empty. Event sets
+local languages. Projections of co-faulty and co-non-faulty sublanguages to the
+common events, denoted as $F_j, N_j$, are empty in the beginning. Event sets
 $\Sigma_{j,c}$ are sets of the common events, which don't belong neither to
-co-faulty and co-non-faulty sublanguages nor to intersection of the sublanguages'
-prefix-closures. Since that sublanguages are not defined in the beginning, the
-event sets contain all events from the projections. A role of these sets will be
-clarified later.
+co-faulty and co-non-faulty sublanguages nor to intersection of the
+sublanguages' prefix-closures. Since that sublanguages are not defined in the
+beginning, the event sets contain all events from the projections. A role of
+these sets will be clarified later.
 The recursive procedure \emph{propagate-fn} computes $F_j$ and $N_j$ for all the
 system's modules, except the module with a fault; the procedure operates with
 common events only. Before entering the procedure the projections of the faulty
 module's sublanguages, $F_i, N_i$ are computed at the step \ref{alg:fcf_Fi}.
-Note, that projection operation preserves faulty and non-faulty information.
+Note, that projection operation preserves faulty and non-faulty information,
+when faulty behaviour is defined in a specification-based way.
 
-The recursive procedure computes all projections $F_j, N_j$ of the adjacent
-modules for a given module $k$ (we say that two modules are adjacent to each
+The recursive procedure computes all projections $F_j, N_j$ of the modules
+adjacent to a given module $k$ (we say that two modules are adjacent to each
 other if their languages have events in common). At the first steps
-\ref{alg:fcf_partial_begin}-\ref{alg:fcf_partial_end} of the
-procedure we compute $F'_j, N'_j$ with respect to the module $k$; these
-projections are partial. At the step \ref{alg:fcf_update} we check if some
-co-faulty or co-non-faulty strings should be added to the projections computed
-earlier. If so, then we update $F_j, N_j$, $\Sigma_{j,c}$ and call the same
-procedure to update projections of the adjacent modules. Thus, whenever the
-co-faulty or co-non-faulty projections of that module changed,
-the projections $F_j, N_j$ are updating with respect to every other module, due
-to recursion.
-Finally, all the co-faulty and co-non-faulty sublanguages are calculated
-for each module at the step \ref{alg:fcf_final}.
+\ref{alg:fcf_partial_begin}-\ref{alg:fcf_partial_end} of the procedure we
+compute $F'_j, N'_j$ with respect to the module $k$; these projections are
+partial. The parallel composition $F_k \parallel C_j$, followed by projection to
+the common events, is used to extract the faulty) information from the
+language $F_k$ to $C_j$, and non-faulty from $N_k$ to $C_j$. At the step
+\ref{alg:fcf_update} we check if some co-faulty or co-non-faulty strings should be added to the projections computed earlier. If so, then we update $F_j, N_j$, $\Sigma_{j,c}$ and call the same procedure to update projections of the adjacent modules. Thus, whenever the co-faulty or
+co-non-faulty projections of that module changed, the projections $F_j, N_j$ are
+updating with respect to every other module, due to recursion. The event sets
+$\Sigma_{j,c}$ represent a potentiality that the projections $F_j, N_j$ can be
+changed; the modules which have these sets empty can't change their language's
+property with respect to the fault and, thus, are skipped during recursive
+procedure. Finally, all the co-faulty and co-non-faulty sublanguages are
+calculated for each module at the step \ref{alg:fcf_final}.
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Construction of  virtual module}
 
-\begin{algorithm} 
+\begin{alg} 
 \caption{Computing observable information for the faulty module} 
 \begin{algorithmic}[1]
 	\Require The index  $i \in I$ of the faulty module, the index of a module with
@@ -851,15 +876,16 @@ for each module at the step \ref{alg:fcf_final}.
 	\Return $L_{i,f}^{ext}, L_{i,nf}^{ext}$
 \end{algorithmic}
 \label{alg:propagate-d}
-\end{algorithm}
+\end{alg}
 
-The structure of the above algorithm is similar to Algorithm
-\ref{alg:propagate_fn}. It starts from computing projections to common and
-observable events for the co-faulty and co-non-faulty sublanguages of each
+The structure of the Algorithm \ref{alg:propagate-d} is similar to one
+in Algorithm \ref{alg:propagate_fn}. It starts from computing projections to
+common and observable events for the co-faulty and co-non-faulty sublanguages of each
 module's language. Then, starting from the module $k$ which has observable
-events in its sublanguages, begins a recursive procedure at step
-\ref{alg:fco_enter_recursion}. In the procedure we collect only observable
-events of other modules which are related to co-faulty or co-non-faulty
+events in its sublanguages (i.e. it has potential observable support for a
+sublanguage of the faulty module), begins a recursive procedure at step
+\ref{alg:fco_enter_recursion}.
+In the procedure we collect only observable events of other modules which are related to co-faulty or co-non-faulty
 sublanguages. Then we propagated these events down to the faulty module.
 Finally, at the step \ref{alg:fco_finalize}, the faulty and non-faulty
 sublanguages of the faulty module are extended with observable events.
@@ -912,11 +938,11 @@ making the virtual modules, we should consider, firstly, the modules which
 themselves have faults. We propose a procedure for the given objective function
 as follows:
 
-Given the system $S$ of cardinality $|I|$, the subset $F
-\subseteq I$ of modules with faults, such that any $f\in F$ is not diagnosable
-locally, the subset $M \subseteq I$ of modules with observable supports, such
-that $(\forall f \in F)~\{m \in M\}\neq \emptyset$. In order to make the system
-diagnosable by minimal number of virtual modules: 
+Given the system of cardinality $|I|$, the subset $F \subseteq I$ of modules
+with faults, such that any $f\in F$ is not diagnosable locally, the subset $M
+\subseteq I$ of modules with observable supports, such that $(\forall f \in
+F)~\{m \in M\}\neq \emptyset$. In order to make the system diagnosable by
+the minimal number of virtual modules:
 \begin{enumerate}
   \item Initially set the partition $J$ of $I$ such that the rank of $J$ is
   equal to 0;
@@ -948,13 +974,52 @@ criteria aimed, for instance, to decrease computational burden.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Example}
 \label{sec:Example}
+An example with languages presented by automata (see the Figures \ref{fig:G1-4}
+-- \ref{fig:L1_extended}) shows how the algorithms \ref{alg:propagate_fn} and
+\ref{alg:propagate-d} can be applied to a simple system. We use marked states to
+mark strings in languages, since they are not prefix-closed, in general. The
+system consists of three modules as depicted in Figure \ref{fig:G1-4}. Here a
+fault is presented only in the language $L_1$ by the event $f$.
+Figure \ref{fig:G1_faulty} depicts faulty and non-faulty sublanguages of the
+language $L_1$. Projections of these sublanguages to the common events (step
+\ref{alg:fcf_Fi} of the Algorithm \ref{alg:propagate_fn}), $F_1$ and $N_1$ are
+depicted in the Figure \ref{fig:FN}. Suppose that in the beginning of the
+recursive procedure we pick module $2$. The figure depicts the co-faulty
+and co-non-faulty sublanguage of the language $L_2$ with respect to the language
+$L_1$, calculated at the steps \ref{alg:fcf_partial_begin} of the algorithm (we
+don't show intermediate automata, reflecting compositional steps, due to space
+restrictions). Note, that, when calculated, the event set $\Sigma_{2,c}$ is
+empty for module $2$. Hence this module will not participate in the procedure
+as a module adjacent to others. At the next step we randomly pick the language
+$L_4$, and compute $F_4$ and $N_4$ with respect to the module $2$. Now, note
+that $\Sigma_{3,c}:= \{e\}$, since this event is neither in the co-faulty and
+co-non-faulty projections nor in their common prefix. The iterations is followed
+by the module $3$, which has module $4$ as an adjacent one. Therefore, the
+sublanguages of this module are updated.
 
-See the Figures \ref{fig:G1-4} -- \ref{fig:L1_extended}.
+Figure \ref{fig:L4_f} depicts co-faulty and co-non-faulty sublanguages of module
+$4$ calculated at the step \ref{alg:fco_finalize} of the Algorithm
+\ref{alg:propagate_fn}. It shows that the co-faulty sublanguage of the module
+has an observable support; it satisfies the requirements of the Lemma
+\ref{lem:distinguished}. Other modules with no faults have no observable
+events; they have no observable supports, and not depicted.
+
+The major steps of Algorithm \ref{alg:propagate-d} are depicted in the Figure
+\ref{fig:D}. It is shown how the observable information from the module $4$ is
+propagated backward to the language of the module $1$. The final step of the
+algorithm is depicted in the Figure \ref{fig:L1_extended}. Clearly, the faulty
+and non-faulty sublanguages, extended with observable information, have
+distinguished observations. Then, we can conclude that the virtual module
+composed of the modules $1$ and $4$ is locally diagnosable. Hence, the system is
+modularly diagnosable with modularity presented by the partition 
+$\{\{1,4\}, \{2\}, \{3\}\}$.
+
+
 
 \begin{figure}[t]
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
@@ -980,7 +1045,7 @@ semithick, initial text=,
 \end{tikzpicture}
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
@@ -1024,20 +1089,20 @@ semithick, initial text=,
 \caption{Automata marking languages $L_1, L_2, L_3$ and $L_4$. $\Sigma_o :=
 \{o_1, o_2\}$, $\Sigma_f := \{f\}$}
 \label{fig:G1-4}
-% \end{figure}
+\end{figure}
 
 % Fautly and non-faulty
-% \begin{figure}[t]
+\begin{figure}[t]
 % \centering
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
 % \draw[help lines] (0,-2) grid (6,2);
 \node[initial,state] (0)                    {$0$};
-\node[above = 3em of 0] {}; %adds some space above
+% \node[above = 3em of 0] {}; %adds some space above
 \node[above left = 0.5em of 0]{$L_{1,f}$};
 \node[state, accepting, fill=orange]         (1) [right of=0] 		{$1$};
 \node[state, accepting, fill=orange]         (2) [right of=1]       {$2$};
@@ -1070,13 +1135,13 @@ semithick, initial text=,
 % \centering
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
 % \draw[help lines] (0,-2) grid (6,2);
 \node[initial,state] (0)                    {$0$};
-\node[above = 3em of 0] {}; %adds some space above
+% \node[above = 3em of 0] {}; %adds some space above
 \node[above left = 0.5em of 0]{$F_1$};
 \node[state, accepting, fill=orange]         (2) [right of=0]       {$2$};
 \node[state, accepting, fill=orange]         (4) [right of=2]       {$4$};
@@ -1099,7 +1164,7 @@ semithick, initial text=,
 
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
@@ -1123,7 +1188,7 @@ semithick, initial text=,
 \end{tikzpicture}
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
@@ -1146,7 +1211,7 @@ semithick, initial text=,
 \end{tikzpicture}
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7}, 
+	every node/.style={scale=0.5}, 
 	every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
@@ -1169,7 +1234,7 @@ semithick, initial text=,
 \end{tikzpicture}
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
@@ -1203,7 +1268,7 @@ sublanguage $F_4$ is defined partially at first, then fully}
 % \centering
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
@@ -1234,14 +1299,14 @@ equal to the ones depicted in the Figure \ref{fig:FN}}
 % \begin{figure}[t]
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7}, 
+	every node/.style={scale=0.5}, 
 	every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
 % \draw[help lines] (0,-2) grid (6,2);
 % F3
 \node[initial,state] (0)                    {$0$};
-\node[above = 3em of 0] {}; %adds some space above
+% \node[above = 3em of 0] {}; %adds some space above
 \node[above left = 0.5em of 0]{$D_{3,f}$};
 \node[state, accepting, fill=orange]         (1) [right of=0] 		{$1$};
 \node[state, accepting, fill=orange]         (2) [right of=1]       {$2$};
@@ -1255,7 +1320,7 @@ semithick, initial text=,
 \end{tikzpicture}
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
@@ -1273,7 +1338,7 @@ semithick, initial text=,
 \end{tikzpicture}
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
@@ -1296,7 +1361,7 @@ semithick, initial text=,
 \end{tikzpicture}
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
@@ -1325,13 +1390,13 @@ $D_{j,nf}$ are not depicted since they have no observable events}
 % \centering
 \begin{tikzpicture}[->,>=stealth, node distance=2cm, auto, shorten >=1pt,
 semithick, initial text=,	
-	every node/.style={scale=0.7},
+	every node/.style={scale=0.5},
     every state/.style={fill=green!40,text=black},
     accepting/.style={double distance=1.5pt, outer sep=0.75pt+\pgflinewidth}
     ]
 % \draw[help lines] (0,-2) grid (6,2);
 \node[initial,state] (0)                    {$0$};
-\node[above = 3em of 0] {}; %adds some space above
+% \node[above = 3em of 0] {}; %adds some space above
 \node[above left = 0.5em of 0]{$L_{1,f}$};
 \node[state, accepting, fill=orange]         (1) [right of=0] 		{$1$};
 \node[state, accepting, fill=orange]         (2) [right of=1]       {$2$};
@@ -1372,13 +1437,14 @@ discrete-event system which is not modular diagnosable with its natural
 modularity. We presented a generalized approach where we achieve modular
 diagnosability by partitioning the set of modules such that each member of the
 partition is considered as a virtual module, and the system is modular
-diagnosable with respect to this new modularity. Since the number of partitions
-is equal to the Bell number, which has a double exponential generating function,
-enumerating all partitions is an intractable problem. Our approach, instead,
-uses two recursive procedures with, in the worst case, exponential time
-complexity, and linear state complexity with respect to the number of modules.
-We suggested an criteria how to maximize the modularity of the system, and a
-correspondent algorithm.
+diagnosable with respect to this new modularity. 
+% Since the number of partitionsis equal to the Bell number, which has a double exponential generating function,
+Enumerating all the partitions is an intractable problem. Our approach, instead,
+uses two recursive procedures which have, in the worst case, exponential time
+complexity. As a trade-off the procedures have low space complexity.  
+% , and linear state complexity with respect to the number of modules.
+We also suggested criteria how to maximize the modularity of the system.
+Viability of the approach will be investigated in the further research.  
 
 
 \bibliographystyle{IEEEtran}
