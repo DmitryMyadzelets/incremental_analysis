@@ -1,0 +1,240 @@
+\documentclass{ifacconf}
+
+\usepackage{natbib}            % you should have natbib.sty
+\usepackage{graphicx}          % Include this line if your 
+                               % document contains figures,
+%\usepackage[dvips]{epsfig}    % or this line, depending on which
+                               % you prefer.
+% predefined environments
+%\begin{thm} ... \end{thm}		% Theorem
+%\begin{lem} ... \end{lem}		% Lemma
+%\begin{claim} ... \end{claim}	% Claim
+%\begin{conj} ... \end{conj}	% Conjecture
+%\begin{cor} ... \end{cor}		% Corollary
+%\begin{fact} ... \end{fact}	% Fact
+%\begin{hypo} ... \end{hypo}	% Hypothesis
+%\begin{prop} ... \end{prop}	% Proposition
+%\begin{crit} ... \end{crit}	% Criterion
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Style for IFAC Conferences \& Symposia: Use Title Case for Paper Title\thanksref{footnoteinfo}} % Title, preferably not more than 10 words.
+
+\thanks[footnoteinfo]{This work was supported in part by the National Technological Agency. (sponsor and financial support acknowledgment goes here). Paper titles should be written in uppercase and lowercase letters, not all uppercase.}
+
+\author[First]{First A. Author} 
+\author[Second]{Second B. Author, Jr.} 
+\author[Third]{Third C. Author}
+
+\address[First]{National Institute of Standards and Technology, Boulder, CO 80305 USA (Tel: 303-555-5555; e-mail: author@ boulder.nist.gov).}                                              
+\address[Second]{Colorado State University, Fort Collins, CO 80523 USA (e-mail: author@lamar. colostate.edu)}
+\address[Third]{Electrical Engineering Department, Seoul National University, Seoul, Korea, (e-mail: author@snu.ac.kr)}
+
+          
+%\begin{keyword}                           % Five to ten keywords,  
+%Cicero; Catiline; orations.               % chosen from the IFAC 
+%\end{keyword}                             % keyword list or with the 
+                                          % help of the Automatica 
+                                          % keyword wizard
+
+
+\begin{abstract}                          % Abstract of not more than 250 words.
+These instructions give you guidelines for preparing papers for IFAC conferences. Use this document as a template to compose your paper if you are using Microsoft Word 6.0 or later. Otherwise, use this document as an instruction set. Please use this document as a “template” to prepare your manuscript. For submission guidelines, follow instructions on paper submission system as well as the Conference website. There is a very small blank line immediately above the abstract, do not delete it; it sets the footnote at the bottom of this column.
+\end{abstract}
+
+\end{frontmatter}
+
+\section{Introduction}
+This document is a template for Microsoft Word versions 6.0 or later. If you are reading a paper version of this document, please download the electronic file, ifacconf.doc If your paper is intended for a conference, please contact your conference editor concerning acceptable word processor for-mats for your particular conference. {\bf Please do not put any running header/footer or Page number in the submitted paper}.
+
+You can type over sections of ifacconf.doc or cut and paste from another document and then use markup styles. The pull-down style menu is at the left of the Formatting Toolbar at the top of your Word window (for example, the style at this point in the document is “Text”). Highlight a section that you want to designate with a certain style, then select the appropriate name on the style menu. The style will adjust your fonts and line spacing. {\bf Do not change the font sizes or line spacing to squeeze more text into a limited number of pages. Use italics for emphasis; do not underline}.
+
+\subsection{A subsection}
+Bifurcation: Plot of local maxima of $x$ with damping $a$ decreasing (Fig.~\ref{fig1}).
+
+To insert images in Word, position the cursor at the insertion point and either use Insert | Picture | From File or copy the image to the Windows clipboard and then Edit | Paste Special | Picture (with “Float over text” unchecked). 
+
+IFAC will not do any final formatting of your paper. Your manuscript should be ‘camera-ready.’ Page limits vary from conference to conference. Please observe the conference page limits of the conference for which your paper is intended. {\bf Please do not modify margins. If you are creating a document on your own, please observe the margins as listed in Table 1}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=4cm]{bifurcation.jpg}    % The printed column  
+\caption{Bifurcation: Plot of local maxima of $x$ with damping $a$ decreasing}  % width is 8.4 cm.
+\label{fig1}                                 % Size the figures 
+\end{center}                                 % accordingly.
+\end{figure}
+
+% OR
+\iffalse
+\begin{figure}
+\begin{center}
+\epsfig{file=jcaesar,width=7cm}
+\caption{Gaius Julius Caesar, 100--44 B.C.}
+\label{fig1}
+\end{center}
+\end{figure}
+\fi
+
+\section{Procedure for Paper Submission}
+
+Next we see a few subsections.
+
+\subsection{Review Stage}
+
+{\bf Please use this document as a “template” to prepare your manuscript. For submission guidelines, follow instructions on paper submission system as well as the Conference website.}
+
+Note that conferences impose strict page limits, so it will be better for you to prepare your initial submission in the camera ready layout so that you will have a good estimate for the paper length. Additionally, the effort required for final submission will be minimal.
+
+Some words might be appropriate describing equation~(\ref{e1}), if 
+we had but time and space enough.
+\begin{equation} \label{e1}
+{{\partial F}\over {\partial t}} =
+D{{\partial^2 F}\over {\partial x^2}}.
+\end{equation}
+See \cite{Abl:56}, \cite{AbTaRu:54}, \cite{Keo:58} and \cite{Pow:85}.
+
+\subsubsection{A subsubsection}This equation goes far beyond the celebrated theorem ascribed to the great Pythagoras by his followers.
+\begin{thm}
+The square of the length of the hypotenuse of a right triangle equals the sum of the squares 
+of the lengths of the other two sides.
+\end{thm}
+\begin{pf}
+The square of the length of the hypotenuse of a right triangle equals the sum of the squares 
+of the lengths of the other two sides.
+\end{pf}
+
+\subsection{Final Stage}
+
+Authors are expected to mind the margins diligently. Conference papers need to be stamped with conference data and paginated for inclusion in the proceedings. If your manuscript bleeds into margins, you will be required to resubmit and delay the proceedings preparation in the process.
+
+\subsection{Page margins}
+
+All dimensions are in {\it centimeters}.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|} \hline
+\multicolumn{4}{|c|}{Margin settings} \\
+\hline
+Page & Top & Bottom & Left/Right \\ \hline
+First & 3.5 & 2.5 & 1.5 \\ \hline
+Rest & 2.5 & 2.5 & 1.5 \\ \hline
+\end{tabular}
+\end{center}
+
+It is very important to maintain these margins. They are necessary to put conference information and page number for the proceedings.
+
+
+\subsection{Figures and PDF Creation}
+
+All figures must be embedded in the document. When you include the image, make sure to insert the actual image rather than a link to your local computer.. As far as possible, use standard PDF conversion tools Adobe Acrobat or Ghostscript give best results. {\bf It is important that all  fonts be embedded/subsetted in the resulting PDF}.
+
+\subsection{Copyright Form}
+
+IFAC will put in place an electronic copyright transfer system in due course. Please “do not” send copyright forms by mail or FAX. More information on this will be made available on IFAC website.
+
+\section{Math}
+
+If you are using Word, use either the Microsoft Equation 
+Editor or the MathType add-on for equations in your paper (Insert | Object | Create New | Microsoft Equation or MathType Equation). “Float over text” should not be selected. Of course LaTeX manages equations through built-in macros.
+
+\section{Units}
+
+Use either SI as primary units. Other units may be used as secondary units (in parentheses). This applies to papers in data storage. For example, write “$15 Gb/cm^2$ ($100 Gb/in^2$).” An exception is when English units are used as identifiers in trade, such as “3.5 in disk drive.” Avoid combining SI and CGS units, such as current in amperes and magnetic field in oersteds. This often leads to confusion because equations do not balance dimensionally. If you must use mixed units, clearly state the units for each quantity in an equation.
+The SI unit for magnetic field strength H is A/m. However, if you wish to use units of $T$, either refer to magnetic flux density $B$ or magnetic field strength symbolized as $\mu_0 H$. Use the center dot to separate compound units, e.g., “$A\cdot m^2$.”
+
+\section{Helpful Hints}
+
+\subsection{Figures and Tables}
+
+Figure axis labels are often a source of confusion. Use words rather than symbols. As an example, write the quantity “Magnetization,” or “Magnetization M,” not just “M.” Put units in parentheses. Do not label axes only with units. As in Fig. 1, for example, write “Magnetization (A/m)” or “Magnetization (A m?1),” not just “A/m.” Do not label axes with a ratio of quantities and units. For example, write “Temperature (K),” not “Temperature/K.”
+
+Multipliers can be especially confusing. Write “Magnetization (kA/m)” or “Magnetization (103 A/m).” Do not write “Magnetization (A/m) ? 1000” because the reader would not know whether the top axis label in Fig. 1 meant 16000 A/m or 0.016 A/m. Figure labels should be legible, approximately 8 to 12 point type.
+
+\subsection{References}
+
+Use Harvard style references (see at the end of this document). If you are using LaTeX, you can process an external bibliography database or insert it directly into the reference section. Footnotes should be avoided as far as possible.
+Please note that the references at the end of this document are in the preferred referencing style. Papers that have not been published should be cited as “unpublished.” Capitalize only the first word in a paper title, except for proper nouns and element symbols.
+
+\subsection{Abbreviations and Acronyms}
+
+Define abbreviations and acronyms the first time they are used in the text, even after they have already been defined in the abstract. Abbreviations such as IFAC, SI, ac, and dc do not have to be defined. Abbreviations that incorporate periods should not have spaces: write “C.N.R.S.,” not “C. N. R. S.” Do not use abbreviations in the title unless they are unavoidable (for example, “IFAC” in the title of this article).
+
+\subsection{Equations}
+
+Number equations consecutively with equation numbers in parentheses flush with the right margin, as in (1). First use the equation editor to create the equation. Then select the “Equation” markup style. Press the tab key and write the equation number in parentheses. To make your equations more compact, you may use the solidus ( / ), the exp function, or appropriate exponents. Use parentheses to avoid ambiguities in denominators. Punctuate equations when they are part of a sentence, as in
+
+\begin{equation} \label{e2}
+\begin{array}{ll}
+\int_0^{r_2} & F (r, \varphi ) dr d\varphi = [\sigma r_2 / (2 \mu_0 )] \\
+& \cdot \int_0^{\inf} exp(-\lambda |z_j - z_i |) \lambda^{-1} J_1 (\lambda  r_2 ) J_0 (\lambda r_i ) d\lambda 
+\end{array}
+\end{equation}
+
+Be sure that the symbols in your equation have been defined before the equation appears or immediately following. Italicize symbols (T might refer to temperature, but T is the unit tesla). Refer to “(1),” not “Eq. (1)” or “equation (1),” except at the beginning of a sentence: “Equation (1) is ... .”
+
+\subsection{Other Recommendations}
+
+Use one space after periods and colons. Hyphenate complex modifiers: “zero-field-cooled magnetization.” Avoid dangling participles, such as, “Using (1), the potential was calculated.” [It is not clear who or what used (1).] Write instead, “The potential was calculated by using (1),” or “Using (1), we calculated the potential.”
+
+A parenthetical statement at the end of a sentence is punctuated outside of the closing parenthesis (like this). (A parenthetical sentence is punctuated within the parentheses.) Avoid contractions; for example, write “do not” instead of “don’t.” The serial comma is preferred: “A, B, and C” instead of “A, B and C.”
+
+
+\section{Conclusion}
+
+A conclusion section is not required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the importance of the work or suggest applications and extensions. 
+
+\begin{ack}                               % Place acknowledgements
+Partially supported by the Roman Senate.  % here.
+\end{ack}
+
+%\bibliographystyle{alpha}        % Include this if you use bibtex 
+%\bibliography{autosam}           % and a bib file to produce the 
+%\bibliography{autosam}
+                                 % bibliography (preferred). The
+                                 % correct style is generated by
+                                 % Elsevier at the time of printing.
+
+\begin{thebibliography}{xx}
+
+\bibitem[Able(1956)]{Abl:56}
+B.C. Able.
+\newblock Nucleic acid content of microscope.
+\newblock \emph{Nature}, 135:\penalty0 7--9, 1956.
+
+\bibitem[Able et~al.(1954)Able, Tagg, and Rush]{AbTaRu:54}
+B.C. Able, R.A. Tagg, and M.~Rush.
+\newblock Enzyme-catalyzed cellular transanimations.
+\newblock In A.F. Round, editor, \emph{Advances in Enzymology}, volume~2, pages
+  125--247. Academic Press, New York, 3rd edition, 1954.
+
+\bibitem[Keohane(1958)]{Keo:58}
+R.~Keohane.
+\newblock \emph{Power and Interdependence: World Politics in Transitions}.
+\newblock Little, Brown \& Co., Boston, 1958.
+
+\bibitem[Powers(1985)]{Pow:85}
+T.~Powers.
+\newblock Is there a way out?
+\newblock \emph{Harpers}, pages 35--47, June 1985.
+
+\bibitem[Soukhanov(1992)]{Heritage:92}
+A.~H. Soukhanov, editor.
+\newblock \emph{{The American Heritage. Dictionary of the American Language}}.
+\newblock Houghton Mifflin Company, 1992.
+
+\end{thebibliography}
+
+
+
+
+
+
+
+
+\appendix
+\section{A summary of Latin grammar}    % Each appendix must have a short title.
+\section{Some Latin vocabulary}         % Sections and subsections are supported  
+                                        % in the appendices.
+\end{document}
